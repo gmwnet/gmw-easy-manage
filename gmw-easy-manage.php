@@ -7,6 +7,8 @@
  * Requires at least: 6.0
  * Requires PHP: 8.0
  * Author: GMW Systems
+ * License: MIT
+ * License URI: https://opensource.org/licenses/MIT
  * Text Domain: gmw-easy-manage
  */
 

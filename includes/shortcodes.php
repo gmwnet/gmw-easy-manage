@@ -385,6 +385,7 @@ add_shortcode('gmw_stylebook', function () {
             <p><?php esc_html_e('All content displayed by these shortcodes is stored in your WordPress database under wp_options. Each shortcode pulls from its own option key — for example, hours data lives in gmw_hours, specials in gmw_specials, and so on. The GMW Easy Manage admin interface at apps.gmwsys.com writes directly to these options via your site database, making it easy for non-technical staff to keep content updated without logging into WordPress.', 'gmw-easy-manage'); ?></p>
             <p><?php esc_html_e('If you are a GMW Systems hosting client, this plugin works with your GMW Easy Manage dashboard out of the box. Each option stores autoload disabled, so the data only loads on pages where the corresponding shortcode is used.', 'gmw-easy-manage'); ?></p>
             <p><?php esc_html_e('If not hosted with GMW Systems, content management requires a technical user. Data can be edited directly via WP-CLI (wp gmw get/update on the server) or programmatically using gmw_get_data() and gmw_update_data() in your theme or plugin code. Contact GMW Systems for onboarding and setup assistance.', 'gmw-easy-manage'); ?></p>
+            <p class="gmw-stylebook-license"><?php esc_html_e('GMW Easy Manage is open source under the MIT License. See LICENSE for full terms.', 'gmw-easy-manage'); ?></p>
             <p><a href="#"><?php esc_html_e('Back to top', 'gmw-easy-manage'); ?></a></p>
         </div>
     </div>

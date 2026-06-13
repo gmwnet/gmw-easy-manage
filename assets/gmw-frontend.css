@@ -370,3 +370,17 @@
     border: none;
     border-radius: 0;
 }
+
+.gmw-preview-transparent .gmw-card {
+    background: none;
+    border-color: #ddd;
+}
+
+.gmw-preview-transparent .gmw-placeholder {
+    background: none;
+    border-color: #ccc;
+}
+
+.gmw-preview-transparent .gmw-social-link {
+    background: transparent;
+}

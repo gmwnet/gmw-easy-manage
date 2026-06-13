@@ -90,8 +90,30 @@
     color: rgba(170, 170, 170, 0.85);
 }
 
+.gmw-theme-dark .gmw-contact-map {
+    border-color: #88b4f0;
+    color: #88b4f0;
+}
+
+.gmw-theme-dark .gmw-contact-map:hover {
+    background: #88b4f0;
+    color: #1a1a2e;
+}
+
 .gmw-theme-dark .gmw-gallery-item {
     background: rgba(22, 33, 62, 0.55);
+}
+
+.gmw-preview-transparent.gmw-theme-dark .gmw-contact-map,
+.gmw-theme-dark .gmw-preview-transparent .gmw-contact-map {
+    border-color: rgba(136, 180, 240, 0.6);
+    color: rgba(136, 180, 240, 0.8);
+}
+
+.gmw-preview-transparent.gmw-theme-dark .gmw-contact-map:hover,
+.gmw-theme-dark .gmw-preview-transparent .gmw-contact-map:hover {
+    background: rgba(136, 180, 240, 0.2);
+    color: #88b4f0;
 }
 
 .gmw-theme-dark .gmw-alert {

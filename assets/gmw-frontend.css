@@ -180,6 +180,26 @@
     color: #555;
 }
 
+.gmw-contact-map {
+    display: inline-block;
+    margin-left: 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #333;
+    text-decoration: none;
+    border: 1px solid #333;
+    padding: 0.1rem 0.5rem;
+    border-radius: 3px;
+    vertical-align: middle;
+}
+
+.gmw-contact-map:hover {
+    background: #333;
+    color: #fff;
+}
+
 .gmw-row {
     display: flex;
     flex-wrap: wrap;
@@ -379,6 +399,16 @@
 .gmw-preview-transparent .gmw-placeholder {
     background: none;
     border-color: #ccc;
+}
+
+.gmw-preview-transparent .gmw-contact-map {
+    border-color: #666;
+    color: #666;
+}
+
+.gmw-preview-transparent .gmw-contact-map:hover {
+    background: #666;
+    color: #fff;
 }
 
 .gmw-preview-transparent .gmw-menu-link {

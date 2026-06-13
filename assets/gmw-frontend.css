@@ -417,6 +417,10 @@
     font-size: 0.85rem;
 }
 
+.gmw-stylebook-tech hr {
+    margin: 2rem 0;
+}
+
 .gmw-stylebook-license {
     font-weight: 600;
     margin-bottom: 0.25rem;

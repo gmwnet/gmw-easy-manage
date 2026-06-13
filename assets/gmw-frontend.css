@@ -188,7 +188,9 @@
 }
 
 .gmw-social-link {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
     padding: 0.5rem 1rem;
     background: #f5f5f5;
     border: 1px solid #ddd;
@@ -196,6 +198,10 @@
     color: #333;
     text-decoration: none;
     font-size: 0.9rem;
+}
+
+.gmw-social-link svg {
+    flex-shrink: 0;
 }
 
 .gmw-social-link:hover {

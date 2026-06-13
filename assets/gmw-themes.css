@@ -67,10 +67,18 @@
     color: #ccc;
 }
 
+.gmw-theme-dark .gmw-social-link svg {
+    fill: #ccc;
+}
+
 .gmw-theme-dark .gmw-social-link:hover {
     background: #0f3460;
     color: #e0e0e0;
     border-color: #0f3460;
+}
+
+.gmw-theme-dark .gmw-social-link:hover svg {
+    fill: #e0e0e0;
 }
 
 .gmw-theme-dark .gmw-contact a {

@@ -59,6 +59,9 @@ register_activation_hook(__FILE__, function () {
     $existing = get_page_by_path($slug, OBJECT, 'page');
 
     if ($existing) {
+        if ($existing->post_status !== 'private') {
+            wp_update_post(['ID' => $existing->ID, 'post_status' => 'private']);
+        }
         update_option('gmw_docs_page_id', $existing->ID);
         return;
     }
@@ -67,7 +70,7 @@ register_activation_hook(__FILE__, function () {
         'post_title' => 'GMW Easy Manage Docs',
         'post_name' => $slug,
         'post_content' => '[gmw_stylebook]',
-        'post_status' => 'publish',
+        'post_status' => 'private',
         'post_type' => 'page',
     ]);
 

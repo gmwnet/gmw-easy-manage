@@ -209,6 +209,26 @@
     border-bottom: 2px solid #eee;
 }
 
+.gmw-stylebook h2 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+.gmw-stylebook-quickref {
+    margin-bottom: 2rem;
+}
+
+.gmw-stylebook-quickref .gmw-table td:first-child {
+    white-space: nowrap;
+}
+
+.gmw-stylebook-quickref code {
+    background: #f0f0f0;
+    padding: 0.15rem 0.4rem;
+    border-radius: 3px;
+    font-size: 0.9rem;
+}
+
 .gmw-stylebook-section:last-child {
     border-bottom: none;
 }

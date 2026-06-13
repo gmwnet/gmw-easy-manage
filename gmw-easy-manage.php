@@ -26,3 +26,58 @@ if (defined('WP_CLI') && WP_CLI) {
 add_action('wp_enqueue_scripts', function () {
     wp_enqueue_style('gmw-easy-manage', GMW_EM_URL . 'assets/gmw-frontend.css', [], GMW_EM_VERSION);
 });
+
+function gmw_docs_page_slug()
+{
+    return 'gmw-easy-manage-docs';
+}
+
+function gmw_docs_page_url()
+{
+    return get_permalink(get_option('gmw_docs_page_id'));
+}
+
+add_action('admin_bar_menu', function ($wp_admin_bar) {
+    if (!current_user_can('read')) {
+        return;
+    }
+    $url = gmw_docs_page_url();
+    if ($url) {
+        $wp_admin_bar->add_node([
+            'id' => 'gmw-docs',
+            'title' => 'EM Docs',
+            'href' => $url,
+            'meta' => ['target' => '_blank'],
+        ]);
+    }
+}, 999);
+
+add_filter('plugin_action_links_' . plugin_basename(__FILE__), function ($links) {
+    $url = gmw_docs_page_url();
+    if ($url) {
+        $links[] = '<a href="' . esc_url($url) . '" target="_blank">Documentation</a>';
+    }
+    return $links;
+});
+
+register_activation_hook(__FILE__, function () {
+    $slug = gmw_docs_page_slug();
+    $existing = get_page_by_path($slug, OBJECT, 'page');
+
+    if ($existing) {
+        update_option('gmw_docs_page_id', $existing->ID);
+        return;
+    }
+
+    $id = wp_insert_post([
+        'post_title' => 'GMW Easy Manage Docs',
+        'post_name' => $slug,
+        'post_content' => '[gmw_stylebook]',
+        'post_status' => 'publish',
+        'post_type' => 'page',
+    ]);
+
+    if ($id && !is_wp_error($id)) {
+        update_option('gmw_docs_page_id', $id);
+    }
+});

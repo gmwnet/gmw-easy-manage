@@ -234,7 +234,7 @@ add_shortcode('gmw_social', function ($atts) {
 });
 
 add_shortcode('gmw_stylebook', function () {
-    if (!current_user_can('edit_theme_options')) {
+    if (!current_user_can('read')) {
         return '';
     }
 
@@ -261,8 +261,28 @@ add_shortcode('gmw_stylebook', function () {
     ob_start();
     ?>
     <div class="gmw-stylebook">
-        <h2><?php esc_html_e('GMW Easy Manage — Stylebook', 'gmw-easy-manage'); ?></h2>
-        <p class="gmw-stylebook-intro"><?php esc_html_e('Below are all available shortcodes rendered with demo data. Theme developers can use this page to preview the default HTML templates.', 'gmw-easy-manage'); ?></p>
+        <h1><?php esc_html_e('GMW Easy Manage — Documentation', 'gmw-easy-manage'); ?></h1>
+        <p class="gmw-stylebook-intro"><?php esc_html_e('Use the shortcodes below in any page, post, or widget to display your business content. Each section shows the available style variations.', 'gmw-easy-manage'); ?></p>
+
+        <div class="gmw-stylebook-quickref">
+            <h2><?php esc_html_e('Quick Reference', 'gmw-easy-manage'); ?></h2>
+            <table class="gmw-table">
+                <thead><tr><th><?php esc_html_e('Shortcode', 'gmw-easy-manage'); ?></th><th><?php esc_html_e('Displays', 'gmw-easy-manage'); ?></th><th><?php esc_html_e('Default Template', 'gmw-easy-manage'); ?></th></tr></thead>
+                <tbody>
+                    <tr><td><code>[gmw_hours]</code></td><td><?php esc_html_e('Business hours', 'gmw-easy-manage'); ?></td><td><?php esc_html_e('table', 'gmw-easy-manage'); ?></td></tr>
+                    <tr><td><code>[gmw_specials]</code></td><td><?php esc_html_e('Specials &amp; promotions', 'gmw-easy-manage'); ?></td><td><?php esc_html_e('cards', 'gmw-easy-manage'); ?></td></tr>
+                    <tr><td><code>[gmw_happy_hours]</code></td><td><?php esc_html_e('Happy hour schedule', 'gmw-easy-manage'); ?></td><td><?php esc_html_e('table', 'gmw-easy-manage'); ?></td></tr>
+                    <tr><td><code>[gmw_menu]</code></td><td><?php esc_html_e('Menu PDF link', 'gmw-easy-manage'); ?></td><td><?php esc_html_e('link', 'gmw-easy-manage'); ?></td></tr>
+                    <tr><td><code>[gmw_events]</code></td><td><?php esc_html_e('Upcoming events', 'gmw-easy-manage'); ?></td><td><?php esc_html_e('list', 'gmw-easy-manage'); ?></td></tr>
+                    <tr><td><code>[gmw_gallery]</code></td><td><?php esc_html_e('Photo gallery', 'gmw-easy-manage'); ?></td><td><?php esc_html_e('grid', 'gmw-easy-manage'); ?></td></tr>
+                    <tr><td><code>[gmw_contact]</code></td><td><?php esc_html_e('Contact information', 'gmw-easy-manage'); ?></td><td><?php esc_html_e('card', 'gmw-easy-manage'); ?></td></tr>
+                    <tr><td><code>[gmw_social]</code></td><td><?php esc_html_e('Social media links', 'gmw-easy-manage'); ?></td><td><?php esc_html_e('row', 'gmw-easy-manage'); ?></td></tr>
+                </tbody>
+            </table>
+            <p><em><?php esc_html_e('Append', 'gmw-easy-manage'); ?> <code>template="alt"</code> <?php esc_html_e('to use a built-in alternative template where available.', 'gmw-easy-manage'); ?></em></p>
+        </div>
+
+        <h2><?php esc_html_e('Style Preview', 'gmw-easy-manage'); ?></h2>
         <?php foreach ($demo as $key => $html): ?>
             <div class="gmw-stylebook-section">
                 <h3><code>[gmw_<?php echo esc_html($key); ?>]</code></h3>

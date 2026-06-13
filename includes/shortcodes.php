@@ -342,7 +342,7 @@ add_shortcode('gmw_stylebook', function () {
     ?>
     <div class="gmw-stylebook">
         <h1><?php esc_html_e('GMW Easy Manage — Documentation', 'gmw-easy-manage'); ?></h1>
-        <p class="gmw-stylebook-intro"><?php esc_html_e('Use the shortcodes below in any page, post, or widget to display your business content. Each section shows the available style variations.', 'gmw-easy-manage'); ?></p>
+        <p class="gmw-stylebook-intro"><?php esc_html_e('Use the shortcodes below in any page, post, or widget to display your business content. Each section shows the available style variations.', 'gmw-easy-manage'); ?> <a href="#gmw-tech-info" class="gmw-stylebook-tech-link"><?php esc_html_e('Technical info', 'gmw-easy-manage'); ?></a></p>
 
         <div class="gmw-stylebook-quickref">
             <h2><?php esc_html_e('Quick Reference', 'gmw-easy-manage'); ?></h2>
@@ -379,6 +379,13 @@ add_shortcode('gmw_stylebook', function () {
                 <?php endforeach; ?>
             </div>
         <?php endforeach; ?>
+
+        <div class="gmw-stylebook-tech" id="gmw-tech-info">
+            <h2><?php esc_html_e('Technical Information', 'gmw-easy-manage'); ?></h2>
+            <p><?php esc_html_e('All content displayed by these shortcodes is stored in your WordPress database under wp_options. Each shortcode pulls from its own option key — for example, hours data lives in gmw_hours, specials in gmw_specials, and so on. The GMW Easy Manage admin interface at apps.gmwsys.com writes directly to these options via your site database, making it easy for non-technical staff to keep content updated without logging into WordPress.', 'gmw-easy-manage'); ?></p>
+            <p><?php esc_html_e('If you are a GMW Systems hosting client, this plugin works with your GMW Easy Manage dashboard out of the box. For technically inclined users, the data can also be edited directly via WP-CLI (wp gmw get/update) or programmatically using gmw_get_data() and gmw_update_data() in your theme or plugin code. Each option stores autoload disabled, so the data only loads on pages where the corresponding shortcode is used.', 'gmw-easy-manage'); ?></p>
+            <p><a href="#"><?php esc_html_e('Back to top', 'gmw-easy-manage'); ?></a></p>
+        </div>
     </div>
     <?php
     return ob_get_clean();

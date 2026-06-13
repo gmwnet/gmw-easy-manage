@@ -384,6 +384,30 @@
     border-radius: 4px;
 }
 
+.gmw-stylebook-tech-link {
+    font-size: 0.85rem;
+    font-weight: 400;
+}
+
+.gmw-stylebook-tech {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 2px solid #eee;
+    font-size: 0.9rem;
+    color: #666;
+    line-height: 1.6;
+}
+
+.gmw-stylebook-tech h2 {
+    font-size: 1.1rem;
+    margin-top: 0;
+}
+
+.gmw-stylebook-tech a[href="#"] {
+    color: #888;
+    font-size: 0.85rem;
+}
+
 .gmw-stylebook-preview.gmw-preview-transparent {
     padding: 0;
     background: transparent;

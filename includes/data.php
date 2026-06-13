@@ -16,6 +16,8 @@ function gmw_get_data($key)
             'gallery' => [],
             'contact' => ['phone' => '', 'email' => '', 'address' => ''],
             'social' => [],
+            'alert' => ['text' => '', 'url' => ''],
+            'promotion' => ['text' => '', 'url' => ''],
         ];
 
         $data = isset($defaults[$key]) ? $defaults[$key] : [];
@@ -57,6 +59,7 @@ function gmw_sanitize_data($key, $data)
                     'title' => sanitize_text_field($item['title'] ?? ''),
                     'description' => wp_kses_post($item['description'] ?? ''),
                     'image_id' => absint($item['image_id'] ?? 0),
+                    'url' => esc_url_raw($item['url'] ?? ''),
                     'valid_until' => sanitize_text_field($item['valid_until'] ?? ''),
                 ];
             }, $data);
@@ -98,6 +101,18 @@ function gmw_sanitize_data($key, $data)
                 'phone' => sanitize_text_field($data['phone'] ?? ''),
                 'email' => sanitize_email($data['email'] ?? ''),
                 'address' => sanitize_textarea_field($data['address'] ?? ''),
+            ];
+
+        case 'alert':
+            return [
+                'text' => wp_kses_post($data['text'] ?? ''),
+                'url' => esc_url_raw($data['url'] ?? ''),
+            ];
+
+        case 'promotion':
+            return [
+                'text' => wp_kses_post($data['text'] ?? ''),
+                'url' => esc_url_raw($data['url'] ?? ''),
             ];
 
         case 'social':

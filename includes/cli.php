@@ -102,6 +102,8 @@ class GMW_CLI extends WP_CLI_Command
             'gmw_gallery',
             'gmw_contact',
             'gmw_social',
+            'gmw_alert',
+            'gmw_promotion',
         ];
 
         WP_CLI::line('GMW Easy Manage Status');

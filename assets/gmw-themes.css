@@ -30,6 +30,10 @@
     color: #aaa;
 }
 
+.gmw-theme-dark .gmw-card-link a {
+    color: #88b4f0;
+}
+
 .gmw-theme-dark .gmw-menu-link {
     background: #0f3460;
     color: #e0e0e0;
@@ -79,4 +83,21 @@
 
 .gmw-theme-dark .gmw-gallery-item {
     background: #16213e;
+}
+
+.gmw-theme-dark .gmw-alert {
+    background: #4a1118;
+    border-color: #dc3545;
+    color: #f8d7da;
+}
+
+.gmw-theme-dark .gmw-promotion {
+    background: #2d2400;
+    border-color: #856404;
+    color: #ffc107;
+}
+
+.gmw-theme-dark .gmw-promotion .gmw-banner-icon {
+    background: #856404;
+    color: #fff;
 }

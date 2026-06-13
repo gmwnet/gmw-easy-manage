@@ -72,6 +72,21 @@
     color: #888;
 }
 
+.gmw-card-link {
+    margin-top: 0.5rem;
+}
+
+.gmw-card-link a {
+    color: #333;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.gmw-card-link a:hover {
+    text-decoration: underline;
+}
+
 .gmw-menu-link {
     display: inline-block;
     padding: 0.75rem 1.5rem;
@@ -189,6 +204,76 @@
     border-color: #333;
 }
 
+.gmw-banner {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    border-radius: 6px;
+    margin: 1rem 0;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.gmw-banner a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.gmw-banner-link {
+    display: inline;
+}
+
+.gmw-banner-icon {
+    font-size: 1.5rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.gmw-banner-text {
+    display: inline;
+}
+
+.gmw-alert {
+    background: #dc3545;
+    color: #fff;
+    font-weight: 600;
+    border: 2px solid #b02a37;
+    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+}
+
+.gmw-alert .gmw-banner-icon {
+    font-size: 2rem;
+}
+
+.gmw-alert a:hover .gmw-banner-text {
+    text-decoration: underline;
+}
+
+.gmw-promotion {
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    color: #856404;
+}
+
+.gmw-promotion .gmw-banner-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    background: #ffc107;
+    color: #333;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.gmw-promotion a:hover .gmw-banner-text {
+    text-decoration: underline;
+}
+
 .gmw-stylebook {
     max-width: 800px;
     margin: 2rem auto;
@@ -242,6 +327,18 @@
 
 .gmw-stylebook-variant {
     margin-top: 1rem;
+}
+
+.gmw-stylebook-shortcode {
+    margin-bottom: 0.25rem;
+}
+
+.gmw-stylebook-shortcode code {
+    background: #e8e8e8;
+    padding: 0.15rem 0.5rem;
+    border-radius: 3px;
+    font-size: 0.85rem;
+    color: #555;
 }
 
 .gmw-stylebook-label {

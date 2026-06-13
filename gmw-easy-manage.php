@@ -37,21 +37,6 @@ function gmw_docs_page_url()
     return get_permalink(get_option('gmw_docs_page_id'));
 }
 
-add_action('admin_bar_menu', function ($wp_admin_bar) {
-    if (!current_user_can('read')) {
-        return;
-    }
-    $url = gmw_docs_page_url();
-    if ($url) {
-        $wp_admin_bar->add_node([
-            'id' => 'gmw-docs',
-            'title' => 'EM Docs',
-            'href' => $url,
-            'meta' => ['target' => '_blank'],
-        ]);
-    }
-}, 999);
-
 add_filter('plugin_action_links_' . plugin_basename(__FILE__), function ($links) {
     $url = gmw_docs_page_url();
     if ($url) {

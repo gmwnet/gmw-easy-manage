@@ -385,30 +385,12 @@ add_shortcode('gmw_stylebook', function () {
             <p><?php esc_html_e('All content displayed by these shortcodes is stored in your WordPress database under wp_options. Each shortcode pulls from its own option key — for example, hours data lives in gmw_hours, specials in gmw_specials, and so on. The GMW Easy Manage admin interface at apps.gmwsys.com writes directly to these options via your site database, making it easy for non-technical staff to keep content updated without logging into WordPress.', 'gmw-easy-manage'); ?></p>
             <p><?php esc_html_e('If you are a GMW Systems hosting client, this plugin works with your GMW Easy Manage dashboard out of the box. Each option stores autoload disabled, so the data only loads on pages where the corresponding shortcode is used.', 'gmw-easy-manage'); ?></p>
             <p><?php esc_html_e('If not hosted with GMW Systems, content management requires a technical user. Data can be edited directly via WP-CLI (wp gmw get/update on the server) or programmatically using gmw_get_data() and gmw_update_data() in your theme or plugin code. Contact GMW Systems for onboarding and setup assistance.', 'gmw-easy-manage'); ?></p>
-            <div class="gmw-stylebook-license">
-                <p><?php esc_html_e('GMW Easy Manage is open source under the MIT License.', 'gmw-easy-manage'); ?></p>
-                <pre>MIT License
-
-Copyright (c) 2026 GMW Systems
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.</pre>
-            </div>
+            <hr>
+            <p class="gmw-stylebook-license"><?php esc_html_e('GMW Easy Manage — Open source under the MIT License.', 'gmw-easy-manage'); ?></p>
+            <p class="gmw-stylebook-license-text"><?php esc_html_e('Copyright (c) 2026 GMW Systems', 'gmw-easy-manage'); ?><br>
+            <?php esc_html_e('Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:', 'gmw-easy-manage'); ?></p>
+            <p class="gmw-stylebook-license-text"><?php esc_html_e('The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.', 'gmw-easy-manage'); ?></p>
+            <p class="gmw-stylebook-license-text"><?php esc_html_e('THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.', 'gmw-easy-manage'); ?></p>
             <p><a href="#"><?php esc_html_e('Back to top', 'gmw-easy-manage'); ?></a></p>
         </div>
     </div>

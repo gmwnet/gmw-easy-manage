@@ -27,6 +27,15 @@ add_action('wp_enqueue_scripts', function () {
     wp_enqueue_style('gmw-easy-manage', GMW_EM_URL . 'assets/gmw-frontend.css', [], GMW_EM_VERSION);
 });
 
+add_filter('wp_robots', function ($robots) {
+    $docs_id = get_option('gmw_docs_page_id');
+    if ($docs_id && is_page($docs_id)) {
+        $robots['noindex'] = true;
+        $robots['nofollow'] = true;
+    }
+    return $robots;
+});
+
 function gmw_docs_page_slug()
 {
     return 'gmw-easy-manage-docs';

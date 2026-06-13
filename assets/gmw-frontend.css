@@ -381,6 +381,21 @@
     border-color: #ccc;
 }
 
+.gmw-preview-transparent .gmw-menu-link {
+    background: none;
+    padding: 0;
+    color: #333;
+}
+
+.gmw-preview-transparent .gmw-menu-link:hover {
+    background: none;
+    text-decoration: underline;
+}
+
+.gmw-theme-dark.gmw-preview-transparent .gmw-menu-link {
+    color: #88b4f0;
+}
+
 .gmw-preview-transparent .gmw-social-link {
     background: transparent;
 }

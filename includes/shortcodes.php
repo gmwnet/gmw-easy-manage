@@ -238,8 +238,10 @@ add_shortcode('gmw_stylebook', function () {
         return '';
     }
 
+    wp_enqueue_style('gmw-easy-manage-themes', GMW_EM_URL . 'assets/gmw-themes.css', ['gmw-easy-manage'], GMW_EM_VERSION);
+
     $demo = [
-        'hours' => '<table class="gmw-table gmw-hours"><tr><td class="gmw-day">Monday</td><td class="gmw-time">9:00 AM &ndash; 10:00 PM</td></tr><tr><td class="gmw-day">Friday</td><td class="gmw-time">9:00 AM &ndash; 12:00 AM</td></tr><tr><td class="gmw-day">Sunday</td><td class="gmw-time">10:00 AM &ndash; 8:00 PM</td></tr></table>',
+        'hours' => '<table class="gmw-table gmw-hours"><tbody><tr><td class="gmw-day">Monday</td><td class="gmw-time">9:00 AM &ndash; 10:00 PM</td></tr><tr><td class="gmw-day">Friday</td><td class="gmw-time">9:00 AM &ndash; 12:00 AM</td></tr><tr><td class="gmw-day">Sunday</td><td class="gmw-time">10:00 AM &ndash; 8:00 PM</td></tr></tbody></table>',
         'specials' => '<div class="gmw-cards gmw-specials"><div class="gmw-card"><h3 class="gmw-card-title">Happy Hour</h3><div class="gmw-card-text">$5 select beers and well drinks</div></div><div class="gmw-card"><h3 class="gmw-card-title">Taco Tuesday</h3><div class="gmw-card-text">$2 tacos all day</div></div></div>',
         'happy_hours' => '<table class="gmw-table gmw-happy-hours"><thead><tr><th>Day</th><th>Time</th><th>Details</th></tr></thead><tbody><tr><td class="gmw-day">Mon-Fri</td><td class="gmw-time">4:00 PM &ndash; 7:00 PM</td><td class="gmw-desc">$1 off all drafts</td></tr><tr><td class="gmw-day">Saturday</td><td class="gmw-time">3:00 PM &ndash; 5:00 PM</td><td class="gmw-desc">Half-price appetizers</td></tr></tbody></table>',
         'menu' => '<a href="#" class="gmw-menu-link" target="_blank" rel="noopener">View Our Menu</a>',
@@ -247,6 +249,11 @@ add_shortcode('gmw_stylebook', function () {
         'gallery' => '<div class="gmw-grid gmw-gallery"><p class="gmw-placeholder">Gallery coming soon.</p></div>',
         'contact' => '<div class="gmw-card gmw-contact"><div class="gmw-contact-phone"><a href="tel:+15551234567">(555) 123-4567</a></div><div class="gmw-contact-email"><a href="mailto:info@example.com">info@example.com</a></div><div class="gmw-contact-address">123 Main St, Anytown USA</div></div>',
         'social' => '<div class="gmw-row gmw-social"><a href="https://facebook.com/" class="gmw-social-link" target="_blank" rel="noopener noreferrer">Facebook</a><a href="https://instagram.com/" class="gmw-social-link" target="_blank" rel="noopener noreferrer">Instagram</a></div>',
+    ];
+
+    $themes = [
+        'default' => 'Default',
+        'dark' => 'Dark',
     ];
 
     ob_start();
@@ -257,9 +264,14 @@ add_shortcode('gmw_stylebook', function () {
         <?php foreach ($demo as $key => $html): ?>
             <div class="gmw-stylebook-section">
                 <h3><code>[gmw_<?php echo esc_html($key); ?>]</code></h3>
-                <div class="gmw-stylebook-preview">
-                    <?php echo $html; ?>
-                </div>
+                <?php foreach ($themes as $theme => $label): ?>
+                    <div class="gmw-stylebook-variant">
+                        <span class="gmw-stylebook-label"><?php echo esc_html($label); ?></span>
+                        <div class="gmw-stylebook-preview <?php echo $theme === 'default' ? '' : 'gmw-theme-' . esc_attr($theme); ?>">
+                            <?php echo $html; ?>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
             </div>
         <?php endforeach; ?>
     </div>

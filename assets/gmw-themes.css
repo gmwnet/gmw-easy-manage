@@ -1,0 +1,82 @@
+.gmw-theme-dark {
+    background: #1a1a2e;
+    color: #e0e0e0;
+    padding: 1rem;
+    border-radius: 6px;
+}
+
+.gmw-theme-dark .gmw-table th {
+    background: #16213e;
+    color: #e0e0e0;
+    border-color: #333;
+}
+
+.gmw-theme-dark .gmw-table td {
+    border-color: #333;
+    color: #ccc;
+}
+
+.gmw-theme-dark .gmw-card {
+    background: #16213e;
+    border-color: #333;
+    color: #ccc;
+}
+
+.gmw-theme-dark .gmw-card-title {
+    color: #e0e0e0;
+}
+
+.gmw-theme-dark .gmw-card-text {
+    color: #aaa;
+}
+
+.gmw-theme-dark .gmw-menu-link {
+    background: #0f3460;
+    color: #e0e0e0;
+}
+
+.gmw-theme-dark .gmw-menu-link:hover {
+    background: #533483;
+}
+
+.gmw-theme-dark .gmw-event {
+    border-color: #333;
+}
+
+.gmw-theme-dark .gmw-event-title {
+    color: #e0e0e0;
+}
+
+.gmw-theme-dark .gmw-event-desc {
+    color: #aaa;
+}
+
+.gmw-theme-dark .gmw-placeholder {
+    border-color: #333;
+    color: #888;
+    background: #16213e;
+}
+
+.gmw-theme-dark .gmw-social-link {
+    background: #16213e;
+    border-color: #333;
+    color: #ccc;
+}
+
+.gmw-theme-dark .gmw-social-link:hover {
+    background: #0f3460;
+    color: #e0e0e0;
+    border-color: #0f3460;
+}
+
+.gmw-theme-dark .gmw-contact a {
+    color: #88b4f0;
+}
+
+.gmw-theme-dark .gmw-contact-address {
+    color: #aaa;
+}
+
+.gmw-theme-dark .gmw-gallery-item {
+    background: #16213e;
+}

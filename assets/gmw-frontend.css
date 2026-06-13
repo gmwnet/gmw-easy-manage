@@ -220,8 +220,21 @@
     font-size: 1rem;
 }
 
+.gmw-stylebook-variant {
+    margin-top: 1rem;
+}
+
+.gmw-stylebook-label {
+    display: inline-block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #888;
+    margin-bottom: 0.25rem;
+}
+
 .gmw-stylebook-preview {
-    margin-top: 0.75rem;
     padding: 1rem;
     background: #fafafa;
     border: 1px solid #eee;

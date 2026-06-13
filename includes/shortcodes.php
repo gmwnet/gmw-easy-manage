@@ -252,8 +252,10 @@ add_shortcode('gmw_stylebook', function () {
     ];
 
     $themes = [
-        'default' => 'Default',
-        'dark' => 'Dark',
+        'default' => ['label' => 'Default', 'class' => ''],
+        'default-transparent' => ['label' => 'Default Transparent', 'class' => 'gmw-preview-transparent'],
+        'dark' => ['label' => 'Dark', 'class' => 'gmw-theme-dark'],
+        'dark-transparent' => ['label' => 'Dark Transparent', 'class' => 'gmw-theme-dark gmw-preview-transparent'],
     ];
 
     ob_start();
@@ -264,10 +266,10 @@ add_shortcode('gmw_stylebook', function () {
         <?php foreach ($demo as $key => $html): ?>
             <div class="gmw-stylebook-section">
                 <h3><code>[gmw_<?php echo esc_html($key); ?>]</code></h3>
-                <?php foreach ($themes as $theme => $label): ?>
+                <?php foreach ($themes as $theme => $config): ?>
                     <div class="gmw-stylebook-variant">
-                        <span class="gmw-stylebook-label"><?php echo esc_html($label); ?></span>
-                        <div class="gmw-stylebook-preview <?php echo $theme === 'default' ? '' : 'gmw-theme-' . esc_attr($theme); ?>">
+                        <span class="gmw-stylebook-label"><?php echo esc_html($config['label']); ?></span>
+                        <div class="gmw-stylebook-preview<?php echo $config['class'] ? ' ' . esc_attr($config['class']) : ''; ?>">
                             <?php echo $html; ?>
                         </div>
                     </div>

@@ -122,6 +122,70 @@ add_filter('plugin_row_meta', function ($links, $file) {
     return $links;
 }, 10, 2);
 
+function gmw_em_register() {
+    $url = home_url();
+    $signature = hash_hmac('sha256', $url, GMW_EM_UPDATE_SECRET, false);
+    $resp = wp_remote_post('https://apps.gmwsys.com/api/easymanage-register', [
+        'headers' => ['Content-Type' => 'application/json'],
+        'body' => json_encode([
+            'url' => $url,
+            'signature' => $signature,
+            'version' => GMW_EM_VERSION,
+        ]),
+        'timeout' => 5,
+    ]);
+    if (is_wp_error($resp) || wp_remote_retrieve_response_code($resp) !== 200) {
+        return false;
+    }
+    $body = json_decode(wp_remote_retrieve_body($resp), true);
+    if (!empty($body['company_code'])) {
+        update_option('gmw_company_code', $body['company_code']);
+    }
+    return !empty($body['ok']);
+}
+
+add_action('gmw_em_do_register', function () {
+    $attempts = (int)get_option('gmw_em_register_attempts', 0) + 1;
+    update_option('gmw_em_register_attempts', $attempts);
+
+    if (gmw_em_register()) {
+        delete_option('gmw_em_register_attempts');
+        delete_option('gmw_em_register_scheduled');
+        return;
+    }
+
+    if ($attempts >= 3) {
+        delete_option('gmw_em_register_attempts');
+        delete_option('gmw_em_register_scheduled');
+        if (function_exists('deactivate_plugins')) {
+            deactivate_plugins(plugin_basename(__FILE__));
+        }
+        return;
+    }
+
+    $schedules = [60, 300, 1800];
+    $delay = $schedules[min($attempts - 1, 2)];
+    wp_schedule_single_event(time() + $delay, 'gmw_em_do_register');
+    update_option('gmw_em_register_scheduled', time() + $delay);
+});
+
+add_action('admin_notices', function () {
+    if (get_option('gmw_em_register_scheduled') && current_user_can('activate_plugins')) {
+        $remaining = max(0, (int)get_option('gmw_em_register_scheduled') - time());
+        $msg = $remaining > 0
+            ? sprintf('GMW Easy Manage is registering with the portal. Auto-retry in %ds.', $remaining)
+            : 'GMW Easy Manage could not register with the portal.';
+        echo '<div class="notice notice-warning is-dismissible"><p>' . esc_html($msg) . '</p></div>';
+    }
+});
+
+add_action('wp', function () {
+    if (!get_option('gmw_company_code') && !wp_next_scheduled('gmw_em_do_register') && !get_option('gmw_em_register_scheduled')) {
+        wp_schedule_single_event(time() + 60, 'gmw_em_do_register');
+        update_option('gmw_em_register_scheduled', time() + 60);
+    }
+});
+
 register_activation_hook(__FILE__, function () {
     $slug = gmw_docs_page_slug();
     $existing = get_page_by_path($slug, OBJECT, 'page');
@@ -131,18 +195,25 @@ register_activation_hook(__FILE__, function () {
             wp_update_post(['ID' => $existing->ID, 'post_status' => 'private']);
         }
         update_option('gmw_docs_page_id', $existing->ID);
-        return;
+    } else {
+        $id = wp_insert_post([
+            'post_title' => 'GMW Easy Manage Docs',
+            'post_name' => $slug,
+            'post_content' => '[gmw_stylebook]',
+            'post_status' => 'private',
+            'post_type' => 'page',
+        ]);
+        if ($id && !is_wp_error($id)) {
+            update_option('gmw_docs_page_id', $id);
+        }
     }
 
-    $id = wp_insert_post([
-        'post_title' => 'GMW Easy Manage Docs',
-        'post_name' => $slug,
-        'post_content' => '[gmw_stylebook]',
-        'post_status' => 'private',
-        'post_type' => 'page',
-    ]);
+    gmw_em_register();
+});
 
-    if ($id && !is_wp_error($id)) {
-        update_option('gmw_docs_page_id', $id);
-    }
+register_deactivation_hook(__FILE__, function () {
+    delete_option('gmw_company_code');
+    delete_option('gmw_em_register_attempts');
+    delete_option('gmw_em_register_scheduled');
+    wp_clear_scheduled_hook('gmw_em_do_register');
 });

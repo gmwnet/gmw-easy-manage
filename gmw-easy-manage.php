@@ -84,21 +84,9 @@ add_action('rest_api_init', function () {
             }
             if (class_exists('GMW_Cache_Control') && method_exists('GMW_Cache_Control', 'send_purge')) {
                 GMW_Cache_Control::send_purge(home_url('/'));
-            } else {
-                $host = defined('GMW_VARNISH_HOST') ? GMW_VARNISH_HOST : '127.0.0.1';
-                $port = defined('GMW_VARNISH_PORT') ? GMW_VARNISH_PORT : 6081;
-                $ch = curl_init();
-                curl_setopt_array($ch, [
-                    CURLOPT_URL => "http://{$host}:{$port}/",
-                    CURLOPT_CUSTOMREQUEST => 'PURGE',
-                    CURLOPT_HTTPHEADER => ['X-Purge-Method: regex'],
-                    CURLOPT_RETURNTRANSFER => true,
-                    CURLOPT_TIMEOUT => 3,
-                ]);
-                curl_exec($ch);
-                curl_close($ch);
+                return ['success' => true];
             }
-            return ['success' => true];
+            return new WP_Error('no_cache', 'GMW Cache Control not installed', ['status' => 200]);
         },
         'permission_callback' => '__return_true',
     ]);

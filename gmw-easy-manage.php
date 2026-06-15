@@ -27,6 +27,7 @@ if (defined('WP_CLI') && WP_CLI) {
 
 add_action('wp_enqueue_scripts', function () {
     wp_enqueue_style('gmw-easy-manage', GMW_EM_URL . 'assets/gmw-frontend.css', [], GMW_EM_VERSION);
+    wp_enqueue_style('gmw-easy-manage-themes', GMW_EM_URL . 'assets/gmw-themes.css', ['gmw-easy-manage'], GMW_EM_VERSION);
 });
 
 add_filter('wp_robots', function ($robots) {

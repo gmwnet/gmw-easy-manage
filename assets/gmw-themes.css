@@ -44,17 +44,6 @@
     background: rgba(83, 52, 131, 0.75);
 }
 
-.gmw-theme-dark .gmw-event {
-    border-color: #333;
-}
-
-.gmw-theme-dark .gmw-event-title {
-    color: rgba(224, 224, 224, 0.85);
-}
-
-.gmw-theme-dark .gmw-event-desc {
-    color: rgba(170, 170, 170, 0.85);
-}
 
 .gmw-theme-dark .gmw-placeholder {
     border-color: #333;
@@ -104,18 +93,6 @@
     background: rgba(22, 33, 62, 0.55);
 }
 
-.gmw-preview-transparent.gmw-theme-dark .gmw-contact-map,
-.gmw-theme-dark .gmw-preview-transparent .gmw-contact-map {
-    border-color: rgba(136, 180, 240, 0.6);
-    color: rgba(136, 180, 240, 0.8);
-}
-
-.gmw-preview-transparent.gmw-theme-dark .gmw-contact-map:hover,
-.gmw-theme-dark .gmw-preview-transparent .gmw-contact-map:hover {
-    background: rgba(136, 180, 240, 0.2);
-    color: #88b4f0;
-}
-
 .gmw-theme-dark .gmw-alert {
     background: #4a1118;
     border-color: #dc3545;
@@ -129,6 +106,182 @@
 }
 
 .gmw-theme-dark .gmw-promotion .gmw-banner-icon {
+    background: #856404;
+    color: #fff;
+}
+
+.gmw-theme-light-transparent .gmw-card {
+    background: none;
+    border: none;
+    color: #333;
+    padding: 0;
+}
+.gmw-theme-light-transparent .gmw-card-title {
+    color: #222;
+}
+.gmw-theme-light-transparent .gmw-card-text {
+    color: #555;
+}
+.gmw-theme-light-transparent .gmw-card-link a {
+    color: #333;
+}
+.gmw-theme-light-transparent .gmw-table th {
+    background: none;
+    color: #333;
+}
+.gmw-theme-light-transparent .gmw-table td {
+    border-color: rgba(0,0,0,0.1);
+    color: #555;
+}
+.gmw-theme-light-transparent .gmw-menu-link {
+    background: transparent;
+    color: #333;
+    border: 2px solid #333;
+    padding: 0.75rem 1.5rem;
+}
+.gmw-theme-light-transparent .gmw-menu-link:hover {
+    background: #333;
+    color: #fff;
+    text-decoration: none;
+}
+.gmw-theme-light-transparent .gmw-placeholder {
+    background: none;
+    border-color: #ccc;
+    color: #888;
+}
+.gmw-theme-light-transparent .gmw-social-link {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #333;
+}
+.gmw-theme-light-transparent .gmw-social-link svg {
+    fill: #333;
+}
+.gmw-theme-light-transparent .gmw-social-link:hover {
+    background: none;
+    color: #000;
+}
+.gmw-theme-light-transparent .gmw-social-link:hover svg {
+    fill: #000;
+}
+.gmw-theme-light-transparent .gmw-contact a {
+    color: #333;
+}
+.gmw-theme-light-transparent .gmw-contact-address {
+    color: #555;
+}
+.gmw-theme-light-transparent .gmw-contact-map {
+    border-color: #333;
+    color: #333;
+}
+.gmw-theme-light-transparent .gmw-contact-map:hover {
+    background: #333;
+    color: #fff;
+}
+.gmw-theme-light-transparent .gmw-gallery-item {
+    background: none;
+}
+
+.gmw-theme-dark-transparent {
+    color: #e0e0e0;
+    background: none;
+}
+.gmw-theme-dark-transparent .gmw-card {
+    background: rgba(22, 33, 62, 0.55);
+    border: none;
+    color: #ccc;
+    padding: 0;
+    backdrop-filter: blur(4px);
+}
+.gmw-theme-dark-transparent .gmw-cards,
+.gmw-theme-dark-transparent .gmw-specials {
+    background: none;
+}
+.gmw-theme-dark-transparent .gmw-card-title {
+    color: rgba(224,224,224,0.85);
+    padding: 0 1rem;
+}
+.gmw-theme-dark-transparent .gmw-card-title:first-child {
+    padding-top: 1rem;
+}
+.gmw-theme-dark-transparent .gmw-card-text {
+    color: rgba(170,170,170,0.85);
+    padding: 0 1rem;
+}
+.gmw-theme-dark-transparent .gmw-card-link a {
+    color: #88b4f0;
+}
+.gmw-theme-dark-transparent .gmw-card-link {
+    padding: 0 1rem 1rem;
+}
+.gmw-theme-dark-transparent .gmw-table th {
+    background: none;
+    color: #e0e0e0;
+}
+.gmw-theme-dark-transparent .gmw-table td {
+    border-color: rgba(255,255,255,0.15);
+    color: #ccc;
+}
+.gmw-theme-dark-transparent .gmw-menu-link {
+    background: transparent;
+    color: #e0e0e0;
+    border: 2px solid #e0e0e0;
+    padding: 0.75rem 1.5rem;
+}
+.gmw-theme-dark-transparent .gmw-menu-link:hover {
+    background: #e0e0e0;
+    color: #1a1a2e;
+    text-decoration: none;
+}
+.gmw-theme-dark-transparent .gmw-placeholder {
+    background: none;
+    border-color: rgba(255,255,255,0.2);
+    color: #888;
+}
+.gmw-theme-dark-transparent .gmw-social-link {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #ccc;
+}
+.gmw-theme-dark-transparent .gmw-social-link svg {
+    fill: #ccc;
+}
+.gmw-theme-dark-transparent .gmw-social-link:hover {
+    color: #e0e0e0;
+}
+.gmw-theme-dark-transparent .gmw-social-link:hover svg {
+    fill: #e0e0e0;
+}
+.gmw-theme-dark-transparent .gmw-contact a {
+    color: #88b4f0;
+}
+.gmw-theme-dark-transparent .gmw-contact-address {
+    color: rgba(170,170,170,0.85);
+}
+.gmw-theme-dark-transparent .gmw-contact-map {
+    border-color: #88b4f0;
+    color: #88b4f0;
+}
+.gmw-theme-dark-transparent .gmw-contact-map:hover {
+    background: #88b4f0;
+    color: #1a1a2e;
+}
+.gmw-theme-dark-transparent .gmw-gallery-item {
+    background: none;
+}
+.gmw-theme-dark-transparent .gmw-alert {
+    background: transparent;
+    border-color: #dc3545;
+    color: #f8d7da;
+}
+.gmw-theme-dark-transparent .gmw-promotion {
+    background: transparent;
+    border-color: #856404;
+    color: #ffc107;
+}
+.gmw-theme-dark-transparent .gmw-promotion .gmw-banner-icon {
     background: #856404;
     color: #fff;
 }

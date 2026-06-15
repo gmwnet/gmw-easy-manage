@@ -11,7 +11,7 @@ function gmw_get_data($key)
             'hours' => [],
             'specials' => [],
             'happy_hours' => [],
-            'menu' => ['pdf_attachment_id' => 0, 'label' => ''],
+            'menu' => [],
             'events' => [],
             'gallery' => [],
             'contact' => ['phone' => '', 'email' => '', 'address' => ''],
@@ -76,10 +76,17 @@ function gmw_sanitize_data($key, $data)
             }, $data);
 
         case 'menu':
-            return [
-                'pdf_attachment_id' => absint($data['pdf_attachment_id'] ?? 0),
-                'label' => sanitize_text_field($data['label'] ?? ''),
-            ];
+            if (!is_array($data)) return [];
+            // Handle old single-menu format
+            if (isset($data['pdf_attachment_id'])) {
+                $data = [$data];
+            }
+            return array_map(function ($item) {
+                return [
+                    'pdf_attachment_id' => absint($item['pdf_attachment_id'] ?? 0),
+                    'label' => sanitize_text_field($item['label'] ?? ''),
+                ];
+            }, array_slice($data, 0, 5));
 
         case 'events':
             if (!is_array($data)) return [];
@@ -88,6 +95,7 @@ function gmw_sanitize_data($key, $data)
                     'date' => sanitize_text_field($item['date'] ?? ''),
                     'title' => sanitize_text_field($item['title'] ?? ''),
                     'description' => wp_kses_post($item['description'] ?? ''),
+                    'url' => esc_url_raw($item['url'] ?? ''),
                     'image_id' => absint($item['image_id'] ?? 0),
                 ];
             }, $data);

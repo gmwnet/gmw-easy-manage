@@ -31,7 +31,7 @@ function gmw_social_icon($platform)
 
 function gmw_theme_wrap($html, $theme)
 {
-    if ($theme && $theme !== 'default') {
+    if ($theme && $theme !== 'default' && $theme !== 'light') {
         $class = 'gmw-theme-' . sanitize_html_class($theme);
         $html = '<div class="' . $class . '">' . $html . '</div>';
     }
@@ -132,25 +132,51 @@ add_shortcode('gmw_happy_hours', function ($atts) {
 });
 
 add_shortcode('gmw_menu', function ($atts) {
-    $atts = shortcode_atts(['template' => 'link', 'theme' => ''], $atts);
+    $atts = shortcode_atts(['template' => 'link', 'theme' => '', 'index' => ''], $atts);
     $data = gmw_get_data('menu');
 
-    if (empty($data['pdf_attachment_id']) && empty($data['label'])) {
+    if (isset($data['pdf_attachment_id'])) {
+        $data = [$data];
+    }
+
+    if ($atts['index'] !== '') {
+        $idx = (int)$atts['index'] - 1;
+        if (isset($data[$idx]) && !empty($data[$idx]['pdf_attachment_id'])) {
+            $item = $data[$idx];
+            $url = wp_get_attachment_url((int)$item['pdf_attachment_id']);
+            $label = !empty($item['label']) ? $item['label'] : __('View Menu', 'gmw-easy-manage');
+            if ($url) {
+                return gmw_theme_wrap('<a href="' . esc_url($url) . '" class="gmw-menu-link" target="_blank" rel="noopener">' . esc_html($label) . '</a>', $atts['theme']);
+            }
+        }
         return gmw_placeholder(__('Menu coming soon.', 'gmw-easy-manage'));
     }
 
-    $url = $data['pdf_attachment_id'] ? wp_get_attachment_url($data['pdf_attachment_id']) : '';
-    $label = !empty($data['label']) ? $data['label'] : __('View Menu', 'gmw-easy-manage');
+    $data = array_filter($data, function ($item) {
+        return !empty($item['pdf_attachment_id']);
+    });
 
-    if (!$url) {
+    if (empty($data)) {
         return gmw_placeholder(__('Menu coming soon.', 'gmw-easy-manage'));
     }
 
-    return gmw_theme_wrap('<a href="' . esc_url($url) . '" class="gmw-menu-link" target="_blank" rel="noopener">' . esc_html($label) . '</a>', $atts['theme']);
+    ob_start();
+    ?>
+    <div class="gmw-menu-list">
+        <?php foreach ($data as $item):
+            $url = wp_get_attachment_url((int)$item['pdf_attachment_id']);
+            $label = !empty($item['label']) ? $item['label'] : __('View Menu', 'gmw-easy-manage');
+            if (!$url) continue;
+        ?>
+            <a href="<?php echo esc_url($url); ?>" class="gmw-menu-link" target="_blank" rel="noopener"><?php echo esc_html($label); ?></a>
+        <?php endforeach; ?>
+    </div>
+    <?php
+    return gmw_theme_wrap(ob_get_clean(), $atts['theme']);
 });
 
 add_shortcode('gmw_events', function ($atts) {
-    $atts = shortcode_atts(['template' => 'list', 'theme' => ''], $atts);
+    $atts = shortcode_atts(['template' => 'cards', 'theme' => ''], $atts);
     $data = gmw_get_data('events');
 
     if (empty($data)) {
@@ -159,20 +185,27 @@ add_shortcode('gmw_events', function ($atts) {
 
     ob_start();
     ?>
-    <ul class="gmw-list gmw-events">
+    <div class="gmw-cards gmw-events">
         <?php foreach ($data as $item): ?>
-            <li class="gmw-event">
+            <div class="gmw-card gmw-event-card">
                 <?php if (!empty($item['image_id'])): ?>
-                    <?php echo wp_get_attachment_image($item['image_id'], 'thumbnail', false, ['class' => 'gmw-event-image']); ?>
+                    <div class="gmw-event-card-image">
+                        <?php echo wp_get_attachment_image($item['image_id'], 'medium', false, ['class' => 'gmw-event-card-img', 'loading' => 'lazy']); ?>
+                    </div>
                 <?php endif; ?>
-                <strong class="gmw-event-date"><?php echo esc_html($item['date']); ?></strong>
-                <span class="gmw-event-title"><?php echo esc_html($item['title']); ?></span>
-                <?php if (!empty($item['description'])): ?>
-                    <div class="gmw-event-desc"><?php echo wp_kses_post($item['description']); ?></div>
-                <?php endif; ?>
-            </li>
+                <div class="gmw-event-card-body">
+                    <div class="gmw-event-date"><?php echo esc_html($item['date']); ?></div>
+                    <h3 class="gmw-card-title"><?php echo esc_html($item['title']); ?></h3>
+                    <?php if (!empty($item['description'])): ?>
+                        <div class="gmw-card-text"><?php echo wp_kses_post($item['description']); ?></div>
+                    <?php endif; ?>
+                    <?php if (!empty($item['url'])): ?>
+                        <div class="gmw-card-link"><a href="<?php echo esc_url($item['url']); ?>"><?php esc_html_e('More info &raquo;', 'gmw-easy-manage'); ?></a></div>
+                    <?php endif; ?>
+                </div>
+            </div>
         <?php endforeach; ?>
-    </ul>
+    </div>
     <?php
     return gmw_theme_wrap(ob_get_clean(), $atts['theme']);
 });
@@ -214,16 +247,19 @@ add_shortcode('gmw_contact', function ($atts) {
     <div class="gmw-card gmw-contact">
         <?php if (!empty($data['phone'])): ?>
             <div class="gmw-contact-phone">
-                <a href="tel:<?php echo esc_attr(preg_replace('/[^0-9+]/', '', $data['phone'])); ?>"><?php echo esc_html($data['phone']); ?></a>
+                <span><?php echo esc_html($data['phone']); ?></span>
+                <a href="tel:<?php echo esc_attr(preg_replace('/[^0-9+]/', '', $data['phone'])); ?>" class="gmw-contact-map" target="_blank" rel="noopener noreferrer"><?php esc_html_e('Call', 'gmw-easy-manage'); ?></a>
             </div>
         <?php endif; ?>
         <?php if (!empty($data['email'])): ?>
             <div class="gmw-contact-email">
-                <a href="mailto:<?php echo esc_attr($data['email']); ?>"><?php echo esc_html($data['email']); ?></a>
+                <span><?php echo esc_html($data['email']); ?></span>
+                <a href="mailto:<?php echo esc_attr($data['email']); ?>" class="gmw-contact-map" target="_blank" rel="noopener noreferrer"><?php esc_html_e('Email', 'gmw-easy-manage'); ?></a>
             </div>
         <?php endif; ?>
         <?php if (!empty($data['address'])): ?>
-            <div class="gmw-contact-address"><?php echo esc_html($data['address']); ?>
+            <div class="gmw-contact-address">
+                <span><?php echo esc_html($data['address']); ?></span>
                 <a href="https://www.google.com/maps?q=<?php echo esc_attr(urlencode($data['address'])); ?>" class="gmw-contact-map" target="_blank" rel="noopener noreferrer"><?php esc_html_e('Map', 'gmw-easy-manage'); ?></a>
             </div>
         <?php endif; ?>
@@ -316,33 +352,31 @@ add_shortcode('gmw_stylebook', function () {
         return '';
     }
 
-    wp_enqueue_style('gmw-easy-manage-themes', GMW_EM_URL . 'assets/gmw-themes.css', ['gmw-easy-manage'], GMW_EM_VERSION);
-
     $demo = [
         'hours' => '<table class="gmw-table gmw-hours"><tbody><tr><td class="gmw-day">Monday</td><td class="gmw-time">9:00 AM &ndash; 10:00 PM</td></tr><tr><td class="gmw-day">Friday</td><td class="gmw-time">9:00 AM &ndash; 12:00 AM</td></tr><tr><td class="gmw-day">Sunday</td><td class="gmw-time">10:00 AM &ndash; 8:00 PM</td></tr></tbody></table>',
         'specials' => '<div class="gmw-cards gmw-specials"><div class="gmw-card"><h3 class="gmw-card-title">Happy Hour</h3><div class="gmw-card-text">$5 select beers and well drinks</div><div class="gmw-card-link"><a href="#">More info &raquo;</a></div></div><div class="gmw-card"><h3 class="gmw-card-title">Taco Tuesday</h3><div class="gmw-card-text">$2 tacos all day</div></div></div>',
         'happy_hours' => '<table class="gmw-table gmw-happy-hours"><thead><tr><th>Day</th><th>Time</th><th>Details</th></tr></thead><tbody><tr><td class="gmw-day">Mon-Fri</td><td class="gmw-time">4:00 PM &ndash; 7:00 PM</td><td class="gmw-desc">$1 off all drafts</td></tr><tr><td class="gmw-day">Saturday</td><td class="gmw-time">3:00 PM &ndash; 5:00 PM</td><td class="gmw-desc">Half-price appetizers</td></tr></tbody></table>',
-        'menu' => '<a href="#" class="gmw-menu-link" target="_blank" rel="noopener">View Our Menu</a>',
-        'events' => '<ul class="gmw-list gmw-events"><li class="gmw-event"><strong class="gmw-event-date">2026-06-20</strong> <span class="gmw-event-title">Live Band</span><div class="gmw-event-desc">Local favorites take the stage</div></li><li class="gmw-event"><strong class="gmw-event-date">2026-07-04</strong> <span class="gmw-event-title">Independence Day Party</span><div class="gmw-event-desc">BBQ, drinks, and fireworks</div></li></ul>',
+        'menu' => '<div class="gmw-menu-list"><a href="#" class="gmw-menu-link" target="_blank" rel="noopener">Dinner Menu</a></div>',
+        'events' => '<div class="gmw-cards gmw-events"><div class="gmw-card gmw-event-card"><div class="gmw-event-card-body"><div class="gmw-event-date">2026-06-20</div><h3 class="gmw-card-title">Live Band</h3><div class="gmw-card-text">Local favorites take the stage</div></div></div><div class="gmw-card gmw-event-card"><div class="gmw-event-card-body"><div class="gmw-event-date">2026-07-04</div><h3 class="gmw-card-title">Independence Day Party</h3><div class="gmw-card-text">BBQ, drinks, and fireworks</div><div class="gmw-card-link"><a href="#">More info &raquo;</a></div></div></div></div>',
         'gallery' => '<div class="gmw-grid gmw-gallery"><p class="gmw-placeholder">Gallery coming soon.</p></div>',
-        'contact' => '<div class="gmw-card gmw-contact"><div class="gmw-contact-phone"><a href="tel:+15551234567">(555) 123-4567</a></div><div class="gmw-contact-email"><a href="mailto:info@example.com">info@example.com</a></div><div class="gmw-contact-address">123 Main St, Anytown USA <a href="https://www.google.com/maps?q=123+Main+St%2C+Anytown+USA" class="gmw-contact-map" target="_blank" rel="noopener noreferrer">Map</a></div></div>',
+        'contact' => '<div class="gmw-card gmw-contact"><div class="gmw-contact-phone"><span>(555) 123-4567</span> <a href="tel:+15551234567" class="gmw-contact-map" target="_blank" rel="noopener noreferrer">Call</a></div><div class="gmw-contact-email"><span>info@example.com</span> <a href="mailto:info@example.com" class="gmw-contact-map" target="_blank" rel="noopener noreferrer">Email</a></div><div class="gmw-contact-address"><span>123 Main St, Anytown USA</span> <a href="https://www.google.com/maps?q=123+Main+St%2C+Anytown+USA" class="gmw-contact-map" target="_blank" rel="noopener noreferrer">Map</a></div></div>',
         'social' => '<div class="gmw-row gmw-social"><a href="https://facebook.com/" class="gmw-social-link" target="_blank" rel="noopener noreferrer"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg> Facebook</a><a href="https://instagram.com/" class="gmw-social-link" target="_blank" rel="noopener noreferrer"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg> Instagram</a></div>',
         'alert' => '<div class="gmw-banner gmw-alert" role="alert"><span class="gmw-banner-icon" aria-hidden="true">&#9888;</span><span class="gmw-banner-text">Weather closure: Opening at noon today due to snow.</span></div>',
         'promotion' => '<div class="gmw-banner gmw-promotion"><span class="gmw-banner-icon" aria-hidden="true">&#33;</span><a href="#" class="gmw-banner-link"><span class="gmw-banner-text">Super Bowl Party! Join us Feb 9 &mdash; reserve your table now!</span></a></div>',
     ];
 
     $themes = [
-        'default' => ['label' => 'Default', 'class' => '', 'attr' => ''],
-        'default-transparent' => ['label' => 'Default Transparent', 'class' => 'gmw-preview-transparent', 'attr' => ''],
-        'dark' => ['label' => 'Dark', 'class' => 'gmw-theme-dark', 'attr' => ' theme="dark"'],
-        'dark-transparent' => ['label' => 'Dark Transparent', 'class' => 'gmw-theme-dark gmw-preview-transparent', 'attr' => ' theme="dark"'],
+        'light' => ['label' => 'Light', 'attr' => ' theme="light"', 'preview_class' => ''],
+        'light-transparent' => ['label' => 'Light Transparent', 'attr' => ' theme="light-transparent"', 'preview_class' => 'gmw-preview-transparent'],
+        'dark' => ['label' => 'Dark', 'attr' => ' theme="dark"', 'preview_class' => ''],
+        'dark-transparent' => ['label' => 'Dark Transparent', 'attr' => ' theme="dark-transparent"', 'preview_class' => 'gmw-preview-transparent'],
     ];
 
     ob_start();
     ?>
     <div class="gmw-stylebook">
         <h1><?php esc_html_e('GMW Easy Manage — Documentation', 'gmw-easy-manage'); ?></h1>
-        <p class="gmw-stylebook-intro"><?php esc_html_e('Use the shortcodes below in any page, post, or widget to display your business content. Each section shows the available style variations.', 'gmw-easy-manage'); ?> <a href="#gmw-tech-info" class="gmw-stylebook-tech-link"><?php esc_html_e('Technical info', 'gmw-easy-manage'); ?></a></p>
+        <p class="gmw-stylebook-intro"><?php esc_html_e('Use the shortcodes below in any page, post, or widget to display your business content. Each section shows the available themes.', 'gmw-easy-manage'); ?> <a href="#gmw-tech-info" class="gmw-stylebook-tech-link"><?php esc_html_e('Technical info', 'gmw-easy-manage'); ?></a></p>
 
         <div class="gmw-stylebook-quickref">
             <h2><?php esc_html_e('Quick Reference', 'gmw-easy-manage'); ?></h2>
@@ -352,7 +386,7 @@ add_shortcode('gmw_stylebook', function () {
                     <tr><td><code>[gmw_hours]</code></td><td><?php esc_html_e('Business hours', 'gmw-easy-manage'); ?></td><td><?php esc_html_e('table', 'gmw-easy-manage'); ?></td></tr>
                     <tr><td><code>[gmw_specials]</code></td><td><?php esc_html_e('Specials &amp; promotions', 'gmw-easy-manage'); ?></td><td><?php esc_html_e('cards', 'gmw-easy-manage'); ?></td></tr>
                     <tr><td><code>[gmw_happy_hours]</code></td><td><?php esc_html_e('Happy hour schedule', 'gmw-easy-manage'); ?></td><td><?php esc_html_e('table', 'gmw-easy-manage'); ?></td></tr>
-                    <tr><td><code>[gmw_menu]</code></td><td><?php esc_html_e('Menu PDF link', 'gmw-easy-manage'); ?></td><td><?php esc_html_e('link', 'gmw-easy-manage'); ?></td></tr>
+                    <tr><td><code>[gmw_menu]</code></td><td><?php esc_html_e('Menu PDF link(s)', 'gmw-easy-manage'); ?></td><td><?php esc_html_e('link', 'gmw-easy-manage'); ?></td></tr>
                     <tr><td><code>[gmw_events]</code></td><td><?php esc_html_e('Upcoming events', 'gmw-easy-manage'); ?></td><td><?php esc_html_e('list', 'gmw-easy-manage'); ?></td></tr>
                     <tr><td><code>[gmw_gallery]</code></td><td><?php esc_html_e('Photo gallery', 'gmw-easy-manage'); ?></td><td><?php esc_html_e('grid', 'gmw-easy-manage'); ?></td></tr>
                     <tr><td><code>[gmw_contact]</code></td><td><?php esc_html_e('Contact information', 'gmw-easy-manage'); ?></td><td><?php esc_html_e('card', 'gmw-easy-manage'); ?></td></tr>
@@ -361,7 +395,7 @@ add_shortcode('gmw_stylebook', function () {
                     <tr><td><code>[gmw_promotion]</code></td><td><?php esc_html_e('Promotion banner (events, big news)', 'gmw-easy-manage'); ?></td><td><?php esc_html_e('banner', 'gmw-easy-manage'); ?></td></tr>
                 </tbody>
             </table>
-            <p><em><?php esc_html_e('Append', 'gmw-easy-manage'); ?> <code>template="alt"</code> <?php esc_html_e('for alternative templates, or', 'gmw-easy-manage'); ?> <code>theme="dark"</code> <?php esc_html_e('for dark theme styling.', 'gmw-easy-manage'); ?></em></p>
+            <p><em><?php esc_html_e('Themes:', 'gmw-easy-manage'); ?> <code>theme="light"</code> (<?php esc_html_e('default', 'gmw-easy-manage'); ?>), <code>theme="light-transparent"</code>, <code>theme="dark"</code>, <code>theme="dark-transparent"</code>. <?php esc_html_e('Append', 'gmw-easy-manage'); ?> <code>template="alt"</code> <?php esc_html_e('for alternative templates.', 'gmw-easy-manage'); ?> <?php esc_html_e('For menus:', 'gmw-easy-manage'); ?> <code>[gmw_menu index="1"]</code> <?php esc_html_e('through', 'gmw-easy-manage'); ?> <code>[gmw_menu index="5"]</code> <?php esc_html_e('for individual menus.', 'gmw-easy-manage'); ?></em></p>
         </div>
 
         <h2><?php esc_html_e('Style Preview', 'gmw-easy-manage'); ?></h2>
@@ -372,8 +406,8 @@ add_shortcode('gmw_stylebook', function () {
                     <div class="gmw-stylebook-variant">
                         <div class="gmw-stylebook-shortcode"><code>[gmw_<?php echo esc_html($key); ?><?php echo esc_html($config['attr']); ?>]</code></div>
                         <span class="gmw-stylebook-label"><?php echo esc_html($config['label']); ?></span>
-                        <div class="gmw-stylebook-preview<?php echo $config['class'] ? ' ' . esc_attr($config['class']) : ''; ?>">
-                            <?php echo $html; ?>
+                        <div class="gmw-stylebook-preview<?php echo $config['preview_class'] ? ' ' . esc_attr($config['preview_class']) : ''; ?>">
+                            <?php echo $config['attr'] ? gmw_theme_wrap($html, $theme) : $html; ?>
                         </div>
                     </div>
                 <?php endforeach; ?>

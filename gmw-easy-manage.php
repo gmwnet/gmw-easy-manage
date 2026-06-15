@@ -163,11 +163,8 @@ add_action('gmw_em_do_register', function () {
     }
 
     if ($attempts >= 3) {
-        delete_option('gmw_em_register_attempts');
+        update_option('gmw_em_register_gaveup', 1);
         delete_option('gmw_em_register_scheduled');
-        if (function_exists('deactivate_plugins')) {
-            deactivate_plugins(plugin_basename(__FILE__));
-        }
         return;
     }
 
@@ -188,7 +185,7 @@ add_action('admin_notices', function () {
 });
 
 add_action('wp', function () {
-    if (!get_option('gmw_company_code') && !wp_next_scheduled('gmw_em_do_register') && !get_option('gmw_em_register_scheduled')) {
+    if (!get_option('gmw_company_code') && !get_option('gmw_em_register_gaveup') && !wp_next_scheduled('gmw_em_do_register') && !get_option('gmw_em_register_scheduled')) {
         wp_schedule_single_event(time() + 60, 'gmw_em_do_register');
         update_option('gmw_em_register_scheduled', time() + 60);
     }
@@ -224,5 +221,6 @@ register_deactivation_hook(__FILE__, function () {
     delete_option('gmw_app_token');
     delete_option('gmw_em_register_attempts');
     delete_option('gmw_em_register_scheduled');
+    delete_option('gmw_em_register_gaveup');
     wp_clear_scheduled_hook('gmw_em_do_register');
 });

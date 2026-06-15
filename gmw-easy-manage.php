@@ -124,7 +124,12 @@ add_filter('plugin_row_meta', function ($links, $file) {
 
 function gmw_em_register() {
     $url = home_url();
-    $signature = hash_hmac('sha256', $url, GMW_EM_UPDATE_SECRET, false);
+    $storedToken = get_option('gmw_app_token', '');
+    if ($storedToken) {
+        $signature = hash_hmac('sha256', $url, $storedToken, false);
+    } else {
+        $signature = hash_hmac('sha256', $url, GMW_EM_UPDATE_SECRET, false);
+    }
     $resp = wp_remote_post('https://apps.gmwsys.com/api/easymanage-register', [
         'headers' => ['Content-Type' => 'application/json'],
         'body' => json_encode([
@@ -140,6 +145,9 @@ function gmw_em_register() {
     $body = json_decode(wp_remote_retrieve_body($resp), true);
     if (!empty($body['company_code'])) {
         update_option('gmw_company_code', $body['company_code']);
+    }
+    if (!empty($body['app_token'])) {
+        update_option('gmw_app_token', $body['app_token']);
     }
     return !empty($body['ok']);
 }
@@ -213,6 +221,7 @@ register_activation_hook(__FILE__, function () {
 
 register_deactivation_hook(__FILE__, function () {
     delete_option('gmw_company_code');
+    delete_option('gmw_app_token');
     delete_option('gmw_em_register_attempts');
     delete_option('gmw_em_register_scheduled');
     wp_clear_scheduled_hook('gmw_em_do_register');

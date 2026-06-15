@@ -74,22 +74,13 @@ add_action('admin_post_gmw_em_check_updates', function () {
     exit;
 });
 
-add_action('rest_api_init', function () {
-    register_rest_route('gmw-easy-manage/v1', '/purge', [
-        'methods' => 'POST',
-        'callback' => function ($request) {
-            $token = $request->get_header('X-GMW-Purge-Token');
-            if (!$token || !hash_equals(hash_hmac('sha256', 'purge', GMW_EM_UPDATE_SECRET), $token)) {
-                return new WP_Error('unauthorized', 'Invalid token', ['status' => 403]);
-            }
-            if (class_exists('GMW_Cache_Control') && method_exists('GMW_Cache_Control', 'send_purge')) {
-                GMW_Cache_Control::send_purge(home_url('/'));
-                return ['success' => true];
-            }
-            return new WP_Error('no_cache', 'GMW Cache Control not installed', ['status' => 200]);
-        },
-        'permission_callback' => '__return_true',
-    ]);
+add_action('init', function () {
+    if (get_option('gmw_purge') === '1') {
+        delete_option('gmw_purge');
+        if (class_exists('GMW_Cache_Control') && method_exists('GMW_Cache_Control', 'send_purge')) {
+            GMW_Cache_Control::send_purge(home_url('/'));
+        }
+    }
 });
 
 function gmw_docs_page_slug()

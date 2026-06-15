@@ -77,9 +77,18 @@ add_action('admin_post_gmw_em_check_updates', function () {
 add_action('init', function () {
     if (get_option('gmw_purge') === '1') {
         delete_option('gmw_purge');
-        if (class_exists('GMW_Cache_Control') && method_exists('GMW_Cache_Control', 'send_purge')) {
-            GMW_Cache_Control::send_purge(home_url('/'));
-        }
+        $host = defined('GMW_VARNISH_HOST') ? GMW_VARNISH_HOST : '127.0.0.1';
+        $port = defined('GMW_VARNISH_PORT') ? GMW_VARNISH_PORT : 6081;
+        $ch = curl_init();
+        curl_setopt_array($ch, [
+            CURLOPT_URL => "http://{$host}:{$port}/",
+            CURLOPT_CUSTOMREQUEST => 'PURGE',
+            CURLOPT_HTTPHEADER => ['X-Purge-Method: regex'],
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => 3,
+        ]);
+        curl_exec($ch);
+        curl_close($ch);
     }
 });
 

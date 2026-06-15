@@ -3,7 +3,7 @@
  * Plugin Name: GMW Easy Manage
  * Plugin URI: https://apps.gmwsys.com/
  * Description: Structured content management for bars and restaurants. Stores hours, specials, menus, events, gallery, contact info, and social links.
- * Version: 1.0.0
+ * Version: 1.6.0
  * Requires at least: 6.0
  * Requires PHP: 8.0
  * Author: GMW Systems
@@ -14,9 +14,11 @@
 
 defined('ABSPATH') or die;
 
-define('GMW_EM_VERSION', '1.0.0');
+define('GMW_EM_VERSION', '1.6.0');
 define('GMW_EM_PATH', plugin_dir_path(__FILE__));
 define('GMW_EM_URL', plugin_dir_url(__FILE__));
+define('GMW_EM_UPDATE_URL', 'https://apps.gmwsys.com/gmw-easy-manage-update/update.json');
+define('GMW_EM_UPDATE_SECRET', 'a9f3c8e1b2d7f4a6c0e9d8b7a5f3e1c2d4b6a8f0e7c9d1b3a5f7e0c2d4b6a8');
 
 require_once GMW_EM_PATH . 'includes/data.php';
 require_once GMW_EM_PATH . 'includes/shortcodes.php';
@@ -39,6 +41,69 @@ add_filter('wp_robots', function ($robots) {
     return $robots;
 });
 
+add_filter('pre_set_site_transient_update_plugins', function ($transient) {
+    if (empty($transient->checked)) return $transient;
+    $remote = wp_remote_get(GMW_EM_UPDATE_URL, ['timeout' => 5]);
+    if (is_wp_error($remote) || wp_remote_retrieve_response_code($remote) !== 200) return $transient;
+    $data = json_decode(wp_remote_retrieve_body($remote));
+    if (!$data || !isset($data->version) || !isset($data->signature)) return $transient;
+    $payload = json_encode([
+        'version' => $data->version,
+        'download_url' => $data->download_url,
+    ], JSON_UNESCAPED_SLASHES);
+    if (!hash_equals(hash_hmac('sha256', $payload, GMW_EM_UPDATE_SECRET), $data->signature)) return $transient;
+    if (version_compare(GMW_EM_VERSION, $data->version, '<')) {
+        $transient->response[plugin_basename(__FILE__)] = (object)[
+            'slug'        => dirname(plugin_basename(__FILE__)),
+            'new_version' => $data->version,
+            'package'     => $data->download_url,
+            'tested'      => $data->tested ?? '7.0',
+            'requires'    => $data->requires ?? '6.0',
+            'url'         => $data->homepage ?? 'https://github.com/gmwnet/gmw-easy-manage',
+        ];
+    }
+    return $transient;
+});
+
+add_action('admin_post_gmw_em_check_updates', function () {
+    if (!wp_verify_nonce($_GET['_wpnonce'] ?? '', 'gmw_em_check_updates') || !current_user_can('manage_options')) {
+        wp_die('Unauthorized');
+    }
+    delete_site_transient('update_plugins');
+    wp_redirect(admin_url('plugins.php?update-check=1'));
+    exit;
+});
+
+add_action('rest_api_init', function () {
+    register_rest_route('gmw-easy-manage/v1', '/purge', [
+        'methods' => 'POST',
+        'callback' => function ($request) {
+            $token = $request->get_header('X-GMW-Purge-Token');
+            if (!$token || !hash_equals(hash_hmac('sha256', 'purge', GMW_EM_UPDATE_SECRET), $token)) {
+                return new WP_Error('unauthorized', 'Invalid token', ['status' => 403]);
+            }
+            if (class_exists('GMW_Cache_Control') && method_exists('GMW_Cache_Control', 'send_purge')) {
+                GMW_Cache_Control::send_purge(home_url('/'));
+            } else {
+                $host = defined('GMW_VARNISH_HOST') ? GMW_VARNISH_HOST : '127.0.0.1';
+                $port = defined('GMW_VARNISH_PORT') ? GMW_VARNISH_PORT : 6081;
+                $ch = curl_init();
+                curl_setopt_array($ch, [
+                    CURLOPT_URL => "http://{$host}:{$port}/",
+                    CURLOPT_CUSTOMREQUEST => 'PURGE',
+                    CURLOPT_HTTPHEADER => ['X-Purge-Method: regex'],
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_TIMEOUT => 3,
+                ]);
+                curl_exec($ch);
+                curl_close($ch);
+            }
+            return ['success' => true];
+        },
+        'permission_callback' => '__return_true',
+    ]);
+});
+
 function gmw_docs_page_slug()
 {
     return 'gmw-easy-manage-docs';
@@ -56,6 +121,14 @@ add_filter('plugin_action_links_' . plugin_basename(__FILE__), function ($links)
     }
     return $links;
 });
+
+add_filter('plugin_row_meta', function ($links, $file) {
+    if ($file === plugin_basename(__FILE__)) {
+        $check_url = wp_nonce_url(admin_url('admin-post.php?action=gmw_em_check_updates'), 'gmw_em_check_updates');
+        $links[] = '<a href="' . esc_url($check_url) . '">Check for Updates</a>';
+    }
+    return $links;
+}, 10, 2);
 
 register_activation_hook(__FILE__, function () {
     $slug = gmw_docs_page_slug();

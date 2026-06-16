@@ -1,6 +1,10 @@
 #!/bin/bash
 # gmw-easy-manage — sign update.json using Ed25519 private key
 # Usage: bash sign-update.sh <version>
+# Note: When building the zip, use --prefix so the zip has a top-level
+# directory matching the plugin slug. Otherwise WordPress uses the temp
+# filename (which has a random suffix) as the plugin directory on update.
+#   git archive --format=zip --prefix=gmw-easy-manage/ HEAD -o /tmp/gmw-easy-manage.zip
 set -e
 
 VERSION="${1:-}"

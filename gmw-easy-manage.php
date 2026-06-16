@@ -3,7 +3,7 @@
  * Plugin Name: GMW Easy Manage
  * Plugin URI: https://gmwsys.com
  * Description: Structured content management for bars and restaurants. Stores hours, specials, menus, events, gallery, contact info, and social links.
- * Version: 1.6.0
+ * Version: 1.6.1
  * Requires at least: 6.0
  * Requires PHP: 8.0
  * Author: GMW Systems
@@ -14,11 +14,11 @@
 
 defined('ABSPATH') or die;
 
-define('GMW_EM_VERSION', '1.6.0');
+define('GMW_EM_VERSION', '1.6.1');
 define('GMW_EM_PATH', plugin_dir_path(__FILE__));
 define('GMW_EM_URL', plugin_dir_url(__FILE__));
 define('GMW_EM_UPDATE_URL', 'https://apps.gmwsys.com/gmw-easy-manage-update/update.json');
-define('GMW_EM_UPDATE_SECRET', 'a9f3c8e1b2d7f4a6c0e9d8b7a5f3e1c2d4b6a8f0e7c9d1b3a5f7e0c2d4b6a8');
+define('GMW_EM_ED25519_PUBLIC_KEY', '1908b0fec1cbf2f692a24594df6f083e8e1726673c079e360ad3e6bd3e01175f');
 
 require_once GMW_EM_PATH . 'includes/data.php';
 require_once GMW_EM_PATH . 'includes/shortcodes.php';
@@ -88,13 +88,15 @@ add_filter('pre_set_site_transient_update_plugins', function ($transient) {
         'version' => $data->version,
         'download_url' => $data->download_url,
     ], JSON_UNESCAPED_SLASHES);
-    if (!hash_equals(hash_hmac('sha256', $payload, GMW_EM_UPDATE_SECRET), $data->signature)) return $transient;
+    $sig = @sodium_hex2bin($data->signature);
+    if ($sig === false || strlen($sig) !== SODIUM_CRYPTO_SIGN_BYTES) return $transient;
+    if (!sodium_crypto_sign_verify_detached($sig, $payload, sodium_hex2bin(GMW_EM_ED25519_PUBLIC_KEY))) return $transient;
     if (version_compare(GMW_EM_VERSION, $data->version, '<')) {
         $transient->response[plugin_basename(__FILE__)] = (object)[
             'slug'        => dirname(plugin_basename(__FILE__)),
             'new_version' => $data->version,
             'package'     => $data->download_url,
-            'tested'      => $data->tested ?? '7.0',
+            'tested'      => $data->tested ?? '6.7',
             'requires'    => $data->requires ?? '6.0',
             'url'         => $data->homepage ?? 'https://github.com/gmwnet/gmw-easy-manage',
         ];
@@ -165,13 +167,18 @@ function gmw_em_register() {
     if ($storedToken) {
         $signature = hash_hmac('sha256', $url, $storedToken, false);
     } else {
-        $signature = hash_hmac('sha256', $url, GMW_EM_UPDATE_SECRET, false);
+        $regSecret = get_option('gmw_em_activation_secret', '');
+        if (!$regSecret) {
+            return false;
+        }
+        $signature = hash_hmac('sha256', $url, $regSecret, false);
     }
     $resp = wp_remote_post('https://apps.gmwsys.com/api/easymanage-register', [
         'headers' => ['Content-Type' => 'application/json'],
         'body' => json_encode([
             'url' => $url,
             'signature' => $signature,
+            'activation_secret' => get_option('gmw_em_activation_secret', ''),
             'version' => GMW_EM_VERSION,
         ]),
         'timeout' => 5,
@@ -229,6 +236,10 @@ add_action('wp', function () {
 });
 
 register_activation_hook(__FILE__, function () {
+    if (!get_option('gmw_em_activation_secret')) {
+        update_option('gmw_em_activation_secret', bin2hex(random_bytes(32)));
+    }
+
     $slug = gmw_docs_page_slug();
     $existing = get_page_by_path($slug, OBJECT, 'page');
 
@@ -259,5 +270,6 @@ register_deactivation_hook(__FILE__, function () {
     delete_option('gmw_em_register_attempts');
     delete_option('gmw_em_register_scheduled');
     delete_option('gmw_em_register_gaveup');
+    delete_option('gmw_em_activation_secret');
     wp_clear_scheduled_hook('gmw_em_do_register');
 });

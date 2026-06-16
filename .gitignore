@@ -2,3 +2,6 @@
 *.swp
 *.swo
 *~
+.vscode/
+.idea/
+ed25519-secret.key

@@ -36,7 +36,3 @@ EOF
 
 echo "Signed update.json for v$VERSION"
 echo "Signature: $SIGNATURE"
-echo ""
-echo "Deploy:"
-echo "  cp /tmp/update.json /var/www/apps.gmwsys.com/gmw-easy-manage-update/update.json"
-echo "  scp /tmp/update.json lax-web01.gmwsys.private:/var/www/apps.gmwsys.com/gmw-easy-manage-update/update.json"

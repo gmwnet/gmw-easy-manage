@@ -3,7 +3,7 @@
  * Plugin Name: GMW Easy Manage
  * Plugin URI: https://gmwsys.com
  * Description: Structured content management for bars and restaurants. Stores hours, specials, menus, events, gallery, contact info, and social links.
- * Version: 1.6.6
+ * Version: 1.6.7
  * Requires at least: 6.0
  * Requires PHP: 8.0
  * Author: GMW Systems
@@ -14,7 +14,7 @@
 
 defined('ABSPATH') or die;
 
-define('GMW_EM_VERSION', '1.6.6');
+define('GMW_EM_VERSION', '1.6.7');
 define('GMW_EM_PATH', plugin_dir_path(__FILE__));
 define('GMW_EM_URL', plugin_dir_url(__FILE__));
 define('GMW_EM_UPDATE_URL', 'https://apps.gmwsys.com/gmw-easy-manage-update/update.json');
@@ -31,6 +31,30 @@ add_filter('http_request_host_whitelist', function ($allowed, $host) {
     }
     return $allowed;
 }, 10, 2);
+
+// Return plugin info for "View Details" modal (since we're not in WP Plugin Directory).
+add_filter('plugins_api', function ($result, $action, $args) {
+    if ($action !== 'plugin_information' || $args->slug !== dirname(plugin_basename(__FILE__))) {
+        return $result;
+    }
+    return (object) [
+        'name'              => 'GMW Easy Manage',
+        'slug'              => 'gmw-easy-manage',
+        'version'           => GMW_EM_VERSION,
+        'author'            => '<a href="https://gmwsys.com/">GMW Systems</a>',
+        'homepage'          => 'https://github.com/gmwnet/gmw-easy-manage',
+        'requires'          => '6.0',
+        'tested'            => '6.7',
+        'requires_php'      => '8.0',
+        'last_updated'      => gmdate('Y-m-d', filemtime(__FILE__)),
+        'sections'          => [
+            'description'  => 'Structured content management for bars and restaurants. Stores hours, specials, menus, events, gallery, contact info, and social links via shortcodes with no custom post types.',
+            'installation' => 'Upload the plugin directory to wp-content/plugins/ and activate it. Data is managed from the GMW Easy Manage admin UI or via WP-CLI.',
+            'changelog'    => 'See <a href="https://github.com/gmwnet/gmw-easy-manage/releases">GitHub releases</a> for the full changelog.',
+        ],
+        'short_description' => 'Structured content management for bars and restaurants — hours, specials, menus, events, gallery, contact, social.',
+    ];
+}, 10, 3);
 
 if (defined('WP_CLI') && WP_CLI) {
     require_once GMW_EM_PATH . 'includes/cli.php';

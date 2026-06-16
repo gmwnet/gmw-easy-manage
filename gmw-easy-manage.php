@@ -3,7 +3,7 @@
  * Plugin Name: GMW Easy Manage
  * Plugin URI: https://gmwsys.com
  * Description: Structured content management for bars and restaurants. Stores hours, specials, menus, events, gallery, contact info, and social links.
- * Version: 1.6.1
+ * Version: 1.6.2
  * Requires at least: 6.0
  * Requires PHP: 8.0
  * Author: GMW Systems
@@ -14,7 +14,7 @@
 
 defined('ABSPATH') or die;
 
-define('GMW_EM_VERSION', '1.6.1');
+define('GMW_EM_VERSION', '1.6.2');
 define('GMW_EM_PATH', plugin_dir_path(__FILE__));
 define('GMW_EM_URL', plugin_dir_url(__FILE__));
 define('GMW_EM_UPDATE_URL', 'https://apps.gmwsys.com/gmw-easy-manage-update/update.json');
@@ -265,11 +265,8 @@ register_activation_hook(__FILE__, function () {
 });
 
 register_deactivation_hook(__FILE__, function () {
-    delete_option('gmw_company_code');
-    delete_option('gmw_app_token');
     delete_option('gmw_em_register_attempts');
     delete_option('gmw_em_register_scheduled');
     delete_option('gmw_em_register_gaveup');
-    delete_option('gmw_em_activation_secret');
     wp_clear_scheduled_hook('gmw_em_do_register');
 });

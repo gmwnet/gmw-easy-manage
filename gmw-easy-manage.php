@@ -3,7 +3,7 @@
  * Plugin Name: GMW Easy Manage
  * Plugin URI: https://gmwsys.com
  * Description: Structured content management for bars and restaurants. Stores hours, specials, menus, events, gallery, contact info, and social links.
- * Version: 1.6.7
+ * Version: 1.6.8
  * Requires at least: 6.0
  * Requires PHP: 8.0
  * Author: GMW Systems
@@ -14,7 +14,7 @@
 
 defined('ABSPATH') or die;
 
-define('GMW_EM_VERSION', '1.6.7');
+define('GMW_EM_VERSION', '1.6.8');
 define('GMW_EM_PATH', plugin_dir_path(__FILE__));
 define('GMW_EM_URL', plugin_dir_url(__FILE__));
 define('GMW_EM_UPDATE_URL', 'https://apps.gmwsys.com/gmw-easy-manage-update/update.json');
@@ -23,14 +23,14 @@ define('GMW_EM_ED25519_PUBLIC_KEY', '1908b0fec1cbf2f692a24594df6f083e8e1726673c0
 require_once GMW_EM_PATH . 'includes/data.php';
 require_once GMW_EM_PATH . 'includes/shortcodes.php';
 
-// Whitelist our update server host (it may resolve to 127.0.0.1 on some servers,
-// which WordPress's SSRF protection rejects).
-add_filter('http_request_host_whitelist', function ($allowed, $host) {
+// Allow our update server host (resolves to 127.0.0.1 on many servers, which
+// WordPress's SSRF protection rejects via http_request_host_is_external).
+add_filter('http_request_host_is_external', function ($external, $host, $url) {
     if ($host === parse_url(GMW_EM_UPDATE_URL, PHP_URL_HOST)) {
-        $allowed[] = $host;
+        return true;
     }
-    return $allowed;
-}, 10, 2);
+    return $external;
+}, 10, 3);
 
 // Return plugin info for "View Details" modal (since we're not in WP Plugin Directory).
 add_filter('plugins_api', function ($result, $action, $args) {

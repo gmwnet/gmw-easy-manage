@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: GMW Easy Manage
- * Plugin URI: https://apps.gmwsys.com/
+ * Plugin URI: https://gmwsys.com
  * Description: Structured content management for bars and restaurants. Stores hours, specials, menus, events, gallery, contact info, and social links.
  * Version: 1.6.0
  * Requires at least: 6.0
@@ -32,13 +32,50 @@ add_action('wp_enqueue_scripts', function () {
     wp_enqueue_style('gmw-easy-manage-themes', GMW_EM_URL . 'assets/gmw-themes.css', ['gmw-easy-manage'], GMW_EM_VERSION);
 });
 
-add_filter('wp_robots', function ($robots) {
-    $docs_id = get_option('gmw_docs_page_id');
-    if ($docs_id && is_page($docs_id)) {
-        $robots['noindex'] = true;
-        $robots['nofollow'] = true;
-    }
-    return $robots;
+add_action('admin_menu', function () {
+    add_submenu_page('options-general.php', 'GMW Easy Manage Docs', 'EM Docs', 'manage_options', 'gmw-em-docs', function () {
+        ?>
+        <div class="wrap">
+        <h1>GMW Easy Manage — Shortcode Reference</h1>
+        <p>Use these shortcodes in any page, post, or widget to display your business content.</p>
+        <table class="wp-list-table widefat fixed striped" style="margin-top:1rem;">
+        <thead><tr><th style="width:25%;">Shortcode</th><th style="width:30%;">Displays</th><th style="width:15%;">Default Template</th><th>Notes</th></tr></thead>
+        <tbody>
+        <tr><td><code>[gmw_hours]</code></td><td>Business hours</td><td>table</td><td></td></tr>
+        <tr><td><code>[gmw_specials]</code></td><td>Specials &amp; promotions</td><td>cards</td><td>Supports <code>url</code> for "More info" link</td></tr>
+        <tr><td><code>[gmw_happy_hours]</code></td><td>Happy hour schedule</td><td>table</td><td></td></tr>
+        <tr><td><code>[gmw_menu]</code></td><td>Menu PDF link(s)</td><td>link</td><td>Use <code>[gmw_menu index="1"]</code> through <code>index="5"</code> for individual menus</td></tr>
+        <tr><td><code>[gmw_events]</code></td><td>Events</td><td>list</td><td></td></tr>
+        <tr><td><code>[gmw_gallery]</code></td><td>Image gallery</td><td>grid</td><td></td></tr>
+        <tr><td><code>[gmw_contact]</code></td><td>Contact info</td><td>card</td><td>Call, Email, and Map buttons</td></tr>
+        <tr><td><code>[gmw_social]</code></td><td>Social media links</td><td>row</td><td>SVG icons for Facebook, Instagram, X, TikTok, YouTube, Yelp, LinkedIn, Pinterest, Snapchat</td></tr>
+        <tr><td><code>[gmw_alert]</code></td><td>Alert banner</td><td>banner</td><td>Hidden when text is empty. Red with &#9888; icon.</td></tr>
+        <tr><td><code>[gmw_promotion]</code></td><td>Promotion banner</td><td>banner</td><td>Hidden when text is empty. Yellow with ! icon.</td></tr>
+        </tbody>
+        </table>
+
+        <h2 style="margin-top:2rem;">Themes</h2>
+        <p>Every shortcode accepts a <code>theme</code> attribute:</p>
+        <table class="wp-list-table widefat fixed striped">
+        <thead><tr><th>Theme</th><th>Attribute</th><th>Description</th></tr></thead>
+        <tbody>
+        <tr><td>Light</td><td><code>theme="light"</code></td><td>Default. Dark text, white backgrounds.</td></tr>
+        <tr><td>Light Transparent</td><td><code>theme="light-transparent"</code></td><td>Dark text, no backgrounds — for light background images.</td></tr>
+        <tr><td>Dark</td><td><code>theme="dark"</code></td><td>Light text, dark backgrounds.</td></tr>
+        <tr><td>Dark Transparent</td><td><code>theme="dark-transparent"</code></td><td>Light text, no backgrounds — for dark background images.</td></tr>
+        </tbody>
+        </table>
+
+        <h2 style="margin-top:2rem;">Custom Templates</h2>
+        <p>Use <code>[gmw_&lt;section&gt; template="alt"]</code> to switch to an alternative built-in template. Use <code>gmw_get_data("key")</code> in PHP templates for fully custom markup.</p>
+
+        <h2 style="margin-top:2rem;">Technical Info</h2>
+        <p><strong>Data storage:</strong> All content in <code>wp_options</code> as serialized arrays. No custom tables, no custom post types. The site is fully portable — move files + database and everything works.</p>
+        <p><strong>Version:</strong> <?= GMW_EM_VERSION ?></p>
+        <p><strong>License:</strong> MIT — Open source. Free to use, modify, and distribute.</p>
+        </div>
+        <?php
+    });
 });
 
 add_filter('pre_set_site_transient_update_plugins', function ($transient) {
@@ -103,7 +140,7 @@ function gmw_docs_page_slug()
 
 function gmw_docs_page_url()
 {
-    return get_permalink(get_option('gmw_docs_page_id'));
+    return admin_url('options-general.php?page=gmw-em-docs');
 }
 
 add_filter('plugin_action_links_' . plugin_basename(__FILE__), function ($links) {

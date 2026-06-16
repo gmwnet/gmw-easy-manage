@@ -348,9 +348,6 @@ add_shortcode('gmw_promotion', function ($atts) {
 });
 
 add_shortcode('gmw_stylebook', function () {
-    if (!current_user_can('read')) {
-        return '';
-    }
 
     $demo = [
         'hours' => '<table class="gmw-table gmw-hours"><tbody><tr><td class="gmw-day">Monday</td><td class="gmw-time">9:00 AM &ndash; 10:00 PM</td></tr><tr><td class="gmw-day">Friday</td><td class="gmw-time">9:00 AM &ndash; 12:00 AM</td></tr><tr><td class="gmw-day">Sunday</td><td class="gmw-time">10:00 AM &ndash; 8:00 PM</td></tr></tbody></table>',

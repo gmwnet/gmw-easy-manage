@@ -411,6 +411,24 @@
     font-size: 1.15rem;
 }
 
+.gmw-portfolio-departed {
+    padding: 2rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: #f9f9f9;
+    color: #555;
+    text-align: center;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin: 1rem 0;
+}
+
+.gmw-portfolio-departed a {
+    color: #333;
+    font-weight: 600;
+    text-decoration: underline;
+}
+
 .gmw-stylebook {
     max-width: 800px;
     margin: 2rem auto;

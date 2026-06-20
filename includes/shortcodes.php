@@ -318,6 +318,23 @@ add_shortcode('gmw_portfolio', function ($atts) {
     $portfolio = $data[$atts['slug']];
     $images = $portfolio['images'] ?? [];
 
+    $artists = gmw_get_data('artists');
+    $artist = null;
+    foreach ($artists as $a) {
+        if ($a['slug'] === $atts['slug']) {
+            $artist = $a;
+            break;
+        }
+    }
+
+    if ($artist && !empty($artist['disabled'])) {
+        $msg = !empty($artist['departure_message'])
+            ? $artist['departure_message']
+            : __('This artist is no longer with us. Please visit our <a href="' . esc_url(home_url('/')) . '">homepage</a> to see our other artists.', 'gmw-easy-manage');
+        $html = '<div class="gmw-portfolio-departed">' . wp_kses_post($msg) . '</div>';
+        return gmw_theme_wrap($html, $atts['theme']);
+    }
+
     if (empty($images)) {
         return gmw_placeholder(__('Portfolio coming soon.', 'gmw-easy-manage'));
     }

@@ -140,6 +140,16 @@
     background: rgba(83, 52, 131, 0.75);
 }
 
+.gmw-theme-dark .gmw-portfolio-departed {
+    background: rgba(22, 33, 62, 0.55);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #ccc;
+}
+
+.gmw-theme-dark .gmw-portfolio-departed a {
+    color: #88b4f0;
+}
+
 .gmw-theme-light-transparent .gmw-card {
     background: none;
     border: none;
@@ -378,4 +388,14 @@
     background: #e0e0e0;
     color: #1a1a2e;
     text-decoration: none;
+}
+
+.gmw-theme-dark-transparent .gmw-portfolio-departed {
+    background: rgba(22, 33, 62, 0.55);
+    border-color: rgba(255, 255, 255, 0.15);
+    color: #ccc;
+}
+
+.gmw-theme-dark-transparent .gmw-portfolio-departed a {
+    color: #88b4f0;
 }

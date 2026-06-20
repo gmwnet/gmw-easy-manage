@@ -326,6 +326,11 @@
     background: #fff;
     display: flex;
     flex-direction: column;
+    max-width: 300px;
+}
+
+.gmw-artists {
+    justify-items: center;
 }
 
 .gmw-artist-photo {

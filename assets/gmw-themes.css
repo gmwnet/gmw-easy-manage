@@ -110,6 +110,36 @@
     color: #fff;
 }
 
+.gmw-theme-dark .gmw-artist-card {
+    background: rgba(22, 33, 62, 0.55);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.gmw-theme-dark .gmw-artist-photo {
+    background: rgba(22, 33, 62, 0.55);
+}
+
+.gmw-theme-dark .gmw-artist-name {
+    color: rgba(224, 224, 224, 0.85);
+}
+
+.gmw-theme-dark .gmw-artist-statement {
+    color: rgba(170, 170, 170, 0.85);
+}
+
+.gmw-theme-dark .gmw-artist-social-link {
+    color: #88b4f0;
+}
+
+.gmw-theme-dark .gmw-artist-portfolio-link {
+    background: rgba(15, 52, 96, 0.65);
+    color: #e0e0e0;
+}
+
+.gmw-theme-dark .gmw-artist-portfolio-link:hover {
+    background: rgba(83, 52, 131, 0.75);
+}
+
 .gmw-theme-light-transparent .gmw-card {
     background: none;
     border: none;
@@ -181,6 +211,37 @@
 }
 .gmw-theme-light-transparent .gmw-gallery-item {
     background: none;
+}
+
+.gmw-theme-light-transparent .gmw-artist-card {
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+.gmw-theme-light-transparent .gmw-artist-name {
+    color: #222;
+}
+
+.gmw-theme-light-transparent .gmw-artist-statement {
+    color: #555;
+}
+
+.gmw-theme-light-transparent .gmw-artist-portfolio-link {
+    background: transparent;
+    color: #333;
+    border: 2px solid #333;
+    padding: 0.4rem 1rem;
+}
+
+.gmw-theme-light-transparent .gmw-artist-portfolio-link:hover {
+    background: #333;
+    color: #fff;
+    text-decoration: none;
+}
+
+.gmw-theme-light-transparent .gmw-artist-social-link {
+    color: #333;
 }
 
 .gmw-theme-dark-transparent {
@@ -284,4 +345,37 @@
 .gmw-theme-dark-transparent .gmw-promotion .gmw-banner-icon {
     background: #856404;
     color: #fff;
+}
+
+.gmw-theme-dark-transparent .gmw-artist-card {
+    background: rgba(22, 33, 62, 0.55);
+    border: none;
+}
+
+.gmw-theme-dark-transparent .gmw-artist-photo {
+    background: rgba(22, 33, 62, 0.55);
+}
+
+.gmw-theme-dark-transparent .gmw-artist-name {
+    color: rgba(224, 224, 224, 0.85);
+}
+
+.gmw-theme-dark-transparent .gmw-artist-statement {
+    color: rgba(170, 170, 170, 0.85);
+}
+
+.gmw-theme-dark-transparent .gmw-artist-social-link {
+    color: #88b4f0;
+}
+
+.gmw-theme-dark-transparent .gmw-artist-portfolio-link {
+    background: transparent;
+    color: #e0e0e0;
+    border: 2px solid #e0e0e0;
+}
+
+.gmw-theme-dark-transparent .gmw-artist-portfolio-link:hover {
+    background: #e0e0e0;
+    color: #1a1a2e;
+    text-decoration: none;
 }

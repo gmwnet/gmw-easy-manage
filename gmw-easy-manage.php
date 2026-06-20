@@ -2,8 +2,8 @@
 /**
  * Plugin Name: GMW Easy Manage
  * Plugin URI: https://gmwsys.com
- * Description: Structured content management for bars and restaurants. Stores hours, specials, menus, events, gallery, contact info, and social links.
- * Version: 1.6.9
+ * Description: Structured content management for businesses. Stores hours, specials, menus, events, gallery, contact info, social links, artist profiles, and portfolios.
+ * Version: 1.7.0
  * Requires at least: 6.0
  * Requires PHP: 8.0
  * Author: GMW Systems
@@ -14,7 +14,7 @@
 
 defined('ABSPATH') or die;
 
-define('GMW_EM_VERSION', '1.6.9');
+define('GMW_EM_VERSION', '1.7.0');
 define('GMW_EM_PATH', plugin_dir_path(__FILE__));
 define('GMW_EM_URL', plugin_dir_url(__FILE__));
 define('GMW_EM_UPDATE_URL', 'https://apps.gmwsys.com/gmw-easy-manage-update/update.json');
@@ -48,11 +48,11 @@ add_filter('plugins_api', function ($result, $action, $args) {
         'requires_php'      => '8.0',
         'last_updated'      => gmdate('Y-m-d', filemtime(__FILE__)),
         'sections'          => [
-            'description'  => 'Structured content management for bars and restaurants. Stores hours, specials, menus, events, gallery, contact info, and social links via shortcodes with no custom post types.',
+            'description'  => 'Structured content management for businesses. Stores hours, specials, menus, events, gallery, contact info, social links, artist profiles, and portfolios via shortcodes with no custom post types.',
             'installation' => 'Upload the plugin directory to wp-content/plugins/ and activate it. Data is managed from the GMW Easy Manage admin UI or via WP-CLI.',
             'changelog'    => 'See <a href="https://github.com/gmwnet/gmw-easy-manage/releases">GitHub releases</a> for the full changelog.',
         ],
-        'short_description' => 'Structured content management for bars and restaurants — hours, specials, menus, events, gallery, contact, social.',
+        'short_description' => 'Structured content management for businesses — hours, specials, menus, events, gallery, contact, social, artists, portfolio.',
     ];
 }, 10, 3);
 
@@ -82,6 +82,8 @@ add_action('admin_menu', function () {
         <tr><td><code>[gmw_gallery]</code></td><td>Image gallery</td><td>grid</td><td></td></tr>
         <tr><td><code>[gmw_contact]</code></td><td>Contact info</td><td>card</td><td>Call, Email, and Map buttons</td></tr>
         <tr><td><code>[gmw_social]</code></td><td>Social media links</td><td>row</td><td>SVG icons for Facebook, Instagram, X, TikTok, YouTube, Yelp, LinkedIn, Pinterest, Snapchat</td></tr>
+        <tr><td><code>[gmw_artists]</code></td><td>Artist profiles</td><td>grid</td><td>Use <code>[gmw_artists slug="name"]</code> for a single artist.</td></tr>
+        <tr><td><code>[gmw_portfolio]</code></td><td>Artist portfolio gallery</td><td>gallery</td><td>Requires <code>slug</code> attribute, e.g. <code>[gmw_portfolio slug="kayla"]</code>.</td></tr>
         <tr><td><code>[gmw_alert]</code></td><td>Alert banner</td><td>banner</td><td>Hidden when text is empty. Red with &#9888; icon.</td></tr>
         <tr><td><code>[gmw_promotion]</code></td><td>Promotion banner</td><td>banner</td><td>Hidden when text is empty. Yellow with ! icon.</td></tr>
         </tbody>

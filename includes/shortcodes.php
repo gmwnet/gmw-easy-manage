@@ -243,12 +243,19 @@ add_shortcode('gmw_artists', function ($atts) {
         return gmw_placeholder(__('Meet our artists coming soon.', 'gmw-easy-manage'));
     }
 
-    $artists = $data;
     if ($atts['slug']) {
         $artists = array_values(array_filter($data, function ($a) use ($atts) {
             return $a['slug'] === $atts['slug'];
         }));
+    } else {
+        $artists = array_values(array_filter($data, function ($a) {
+            return empty($a['disabled']);
+        }));
     }
+
+    usort($artists, function ($a, $b) {
+        return ($a['order'] ?? 0) - ($b['order'] ?? 0);
+    });
 
     if (empty($artists)) {
         return '';

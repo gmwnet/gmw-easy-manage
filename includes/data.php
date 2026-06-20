@@ -140,6 +140,7 @@ function gmw_sanitize_data($key, $data)
                     'social' => $social,
                     'portfolio_url' => esc_url_raw($item['portfolio_url'] ?? ''),
                     'order' => absint($item['order'] ?? 0),
+                    'disabled' => !empty($item['disabled']),
                 ];
             }, $data));
 

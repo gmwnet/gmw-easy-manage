@@ -171,6 +171,9 @@ function gmw_sanitize_data($key, $data)
             return $sanitized;
 
         default:
-            return $data;
+            if (defined('WP_DEBUG') && WP_DEBUG) {
+                trigger_error("gmw_sanitize_data: Unknown key '{$key}'", E_USER_WARNING);
+            }
+            return [];
     }
 }

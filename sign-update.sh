@@ -12,6 +12,10 @@ if [ -z "$VERSION" ]; then
     echo "Usage: $0 <version>"
     exit 1
 fi
+if ! [[ "$VERSION" =~ ^[a-zA-Z0-9._-]+$ ]]; then
+    echo "Error: Invalid version string '${VERSION}'"
+    exit 1
+fi
 
 KEY_FILE="$(dirname "$0")/ed25519-secret.key"
 if [ ! -f "$KEY_FILE" ]; then

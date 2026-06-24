@@ -3,7 +3,7 @@
  * Plugin Name: GMW Easy Manage
  * Plugin URI: https://gmwsys.com
  * Description: Structured content management for businesses. Stores hours, specials, menus, events, gallery, contact info, social links, artist profiles, and portfolios.
- * Version: 1.7.0
+ * Version: 1.7.1
  * Requires at least: 6.0
  * Requires PHP: 8.0
  * Author: GMW Systems
@@ -14,7 +14,7 @@
 
 defined('ABSPATH') or die;
 
-define('GMW_EM_VERSION', '1.7.0');
+define('GMW_EM_VERSION', '1.7.1');
 define('GMW_EM_PATH', plugin_dir_path(__FILE__));
 define('GMW_EM_URL', plugin_dir_url(__FILE__));
 define('GMW_EM_UPDATE_URL', 'https://apps.gmwsys.com/gmw-easy-manage-update/update.json');
@@ -46,7 +46,7 @@ add_filter('plugins_api', function ($result, $action, $args) {
         'requires'          => '6.0',
         'tested'            => '6.7',
         'requires_php'      => '8.0',
-        'last_updated'      => gmdate('Y-m-d', filemtime(__FILE__)),
+        'last_updated'      => '2026-06-24',
         'sections'          => [
             'description'  => 'Structured content management for businesses. Stores hours, specials, menus, events, gallery, contact info, social links, artist profiles, and portfolios via shortcodes with no custom post types.',
             'installation' => 'Upload the plugin directory to wp-content/plugins/ and activate it. Data is managed from the GMW Easy Manage admin UI or via WP-CLI.',
@@ -208,14 +208,17 @@ function gmw_em_register() {
         }
         $signature = hash_hmac('sha256', $url, $regSecret, false);
     }
+    $body = [
+        'url' => $url,
+        'signature' => $signature,
+        'version' => GMW_EM_VERSION,
+    ];
+    if (!$storedToken) {
+        $body['activation_secret'] = get_option('gmw_em_activation_secret', '');
+    }
     $resp = wp_remote_post('https://apps.gmwsys.com/api/easymanage-register', [
         'headers' => ['Content-Type' => 'application/json'],
-        'body' => json_encode([
-            'url' => $url,
-            'signature' => $signature,
-            'activation_secret' => get_option('gmw_em_activation_secret', ''),
-            'version' => GMW_EM_VERSION,
-        ]),
+        'body' => json_encode($body),
         'timeout' => 5,
     ]);
     if (is_wp_error($resp) || wp_remote_retrieve_response_code($resp) !== 200) {
@@ -264,10 +267,12 @@ add_action('admin_notices', function () {
 });
 
 add_action('wp', function () {
-    if (!get_option('gmw_company_code') && !get_option('gmw_em_register_gaveup') && !wp_next_scheduled('gmw_em_do_register') && !get_option('gmw_em_register_scheduled')) {
-        wp_schedule_single_event(time() + 60, 'gmw_em_do_register');
-        update_option('gmw_em_register_scheduled', time() + 60);
-    }
+    if (get_option('gmw_company_code') || get_option('gmw_em_register_gaveup')) return;
+    if (wp_next_scheduled('gmw_em_do_register')) return;
+    if (get_transient('gmw_em_register_lock')) return;
+    set_transient('gmw_em_register_lock', 1, 55);
+    wp_schedule_single_event(time() + 60, 'gmw_em_do_register');
+    update_option('gmw_em_register_scheduled', time() + 60);
 });
 
 register_activation_hook(__FILE__, function () {
@@ -296,7 +301,9 @@ register_activation_hook(__FILE__, function () {
         }
     }
 
-    gmw_em_register();
+    if (!wp_next_scheduled('gmw_em_do_register')) {
+        wp_schedule_single_event(time() + 30, 'gmw_em_do_register');
+    }
 });
 
 register_deactivation_hook(__FILE__, function () {

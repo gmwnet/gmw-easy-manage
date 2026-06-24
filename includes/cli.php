@@ -43,6 +43,12 @@ class GMW_CLI extends WP_CLI_Command
             WP_CLI::error("File not found: {$file_path}");
         }
 
+        $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'application/pdf'];
+        $mime = mime_content_type($file_path);
+        if (!in_array($mime, $allowed_types, true)) {
+            WP_CLI::error("File type not allowed: {$mime}");
+        }
+
         $filename = !empty($args[1]) ? $args[1] : basename($file_path);
 
         $file_contents = file_get_contents($file_path);
@@ -91,8 +97,6 @@ class GMW_CLI extends WP_CLI_Command
 
     public function status()
     {
-        global $wpdb;
-
         $option_keys = [
             'gmw_hours',
             'gmw_specials',

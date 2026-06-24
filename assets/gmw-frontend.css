@@ -312,6 +312,128 @@
     text-decoration: underline;
 }
 
+.gmw-artists {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 1rem 0;
+}
+
+.gmw-artist-card {
+    border: 1px solid #eee;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    max-width: 300px;
+}
+
+.gmw-artists {
+    justify-items: center;
+}
+
+.gmw-artist-photo {
+    width: 100%;
+    aspect-ratio: 1;
+    overflow: hidden;
+    background: #f5f5f5;
+}
+
+.gmw-artist-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.gmw-artist-body {
+    padding: 1.25rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.gmw-artist-name {
+    margin: 0 0 0.5rem;
+    font-size: 1.2rem;
+}
+
+.gmw-artist-statement {
+    color: #555;
+    line-height: 1.5;
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+    flex: 1;
+}
+
+.gmw-artist-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+    margin-top: auto;
+}
+
+.gmw-artist-social-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    color: #333;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.gmw-artist-social-link:hover {
+    text-decoration: underline;
+}
+
+.gmw-artist-social-link svg {
+    flex-shrink: 0;
+}
+
+.gmw-artist-portfolio-link {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.4rem 1rem;
+    background: #333;
+    color: #fff;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-left: auto;
+}
+
+.gmw-artist-portfolio-link:hover {
+    background: #555;
+    color: #fff;
+}
+
+.gmw-portfolio-title {
+    margin: 1rem 0 0.5rem;
+    font-size: 1.15rem;
+}
+
+.gmw-portfolio-departed {
+    padding: 2rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: #f9f9f9;
+    color: #555;
+    text-align: center;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin: 1rem 0;
+}
+
+.gmw-portfolio-departed a {
+    color: #333;
+    font-weight: 600;
+    text-decoration: underline;
+}
+
 .gmw-stylebook {
     max-width: 800px;
     margin: 2rem auto;

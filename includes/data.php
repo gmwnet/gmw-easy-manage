@@ -18,6 +18,8 @@ function gmw_get_data($key)
             'social' => [],
             'alert' => ['text' => '', 'url' => ''],
             'promotion' => ['text' => '', 'url' => ''],
+            'artists' => [],
+            'portfolio' => [],
         ];
 
         $data = isset($defaults[$key]) ? $defaults[$key] : [];
@@ -123,6 +125,39 @@ function gmw_sanitize_data($key, $data)
                 'url' => esc_url_raw($data['url'] ?? ''),
             ];
 
+        case 'artists':
+            if (!is_array($data)) return [];
+            return array_values(array_map(function ($item) {
+                $social = isset($item['social']) && is_array($item['social']) ? [
+                    'instagram' => esc_url_raw($item['social']['instagram'] ?? ''),
+                    'email' => sanitize_email($item['social']['email'] ?? ''),
+                ] : [];
+                return [
+                    'slug' => sanitize_title($item['slug'] ?? ''),
+                    'name' => sanitize_text_field($item['name'] ?? ''),
+                    'photo' => absint($item['photo'] ?? 0),
+                    'statement' => wp_kses_post($item['statement'] ?? ''),
+                    'social' => $social,
+                    'portfolio_url' => esc_url_raw($item['portfolio_url'] ?? ''),
+                    'order' => absint($item['order'] ?? 0),
+                    'disabled' => !empty($item['disabled']),
+                    'departure_message' => wp_kses_post($item['departure_message'] ?? ''),
+                ];
+            }, $data));
+
+        case 'portfolio':
+            if (!is_array($data)) return [];
+            $sanitized = [];
+            foreach ($data as $slug => $portfolio) {
+                $slug = sanitize_title($slug);
+                if (!$slug) continue;
+                $sanitized[$slug] = [
+                    'title' => sanitize_text_field($portfolio['title'] ?? ''),
+                    'images' => array_map('absint', $portfolio['images'] ?? []),
+                ];
+            }
+            return $sanitized;
+
         case 'social':
             if (!is_array($data)) return [];
             $sanitized = [];
@@ -136,6 +171,9 @@ function gmw_sanitize_data($key, $data)
             return $sanitized;
 
         default:
-            return $data;
+            if (defined('WP_DEBUG') && WP_DEBUG) {
+                trigger_error("gmw_sanitize_data: Unknown key '{$key}'", E_USER_WARNING);
+            }
+            return [];
     }
 }

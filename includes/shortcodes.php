@@ -109,6 +109,17 @@ function gmw_video_embed($url, $provider)
     return '';
 }
 
+function gmw_video_ratio($url, $provider)
+{
+    if ($provider === 'facebook') {
+        if (preg_match('~/reel(s)?/~i', $url)) return 'portrait';
+        return 'landscape';
+    }
+    if ($provider === 'instagram') return 'portrait';
+    if ($provider === 'tiktok') return 'portrait';
+    return 'landscape';
+}
+
 function gmw_gallery_video_tile($item)
 {
     $provider = gmw_video_provider($item['url'] ?? '');
@@ -139,7 +150,7 @@ function gmw_gallery_video_tile($item)
         <?php if ($caption): ?>
         <figcaption class="gmw-gallery-caption"><?php echo esc_html($caption); ?></figcaption>
         <?php endif; ?>
-        <template class="gmw-video-embed" data-gmw-embed-key="<?php echo esc_attr($videoKey); ?>">
+        <template class="gmw-video-embed" data-gmw-embed-key="<?php echo esc_attr($videoKey); ?>" data-gmw-ratio="<?php echo esc_attr(gmw_video_ratio($item['url'] ?? '', $provider)); ?>">
             <?php echo gmw_video_embed($item['url'] ?? '', $provider); ?>
         </template>
     </figure>

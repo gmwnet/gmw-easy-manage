@@ -292,6 +292,14 @@
     aspect-ratio: 16 / 9;
 }
 
+.gmw-video-modal-embed-portrait {
+    aspect-ratio: 9 / 16;
+    height: min(80vh, 900px);
+    width: auto;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
 .gmw-video-modal-embed iframe {
     position: absolute;
     inset: 0;

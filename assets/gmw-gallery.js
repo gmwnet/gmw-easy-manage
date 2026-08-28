@@ -32,9 +32,14 @@
             window.open(link.href, '_blank', 'noopener');
             return;
         }
+        var ratio = embedTemplate ? embedTemplate.getAttribute('data-gmw-ratio') : '';
         var m = ensureModal();
         var embedBox = m.querySelector('.gmw-video-modal-embed');
         embedBox.innerHTML = embedHtml;
+        embedBox.classList.remove('gmw-video-modal-embed-portrait');
+        if (ratio === 'portrait') {
+            embedBox.classList.add('gmw-video-modal-embed-portrait');
+        }
         m.classList.add('gmw-video-modal-open');
         document.body.classList.add('gmw-video-modal-locked');
         var iframe = embedBox.querySelector('iframe');

@@ -104,18 +104,32 @@ function gmw_sanitize_data($key, $data)
 
         case 'gallery':
             if (!is_array($data)) return [];
-            // Accept legacy flat array of attachment IDs and migrate to objects.
+            $allowedProviders = ['youtube', 'vimeo', 'instagram', 'tiktok'];
             $sanitized = [];
             foreach ($data as $item) {
-                if (is_array($item)) {
-                    $id = absint($item['id'] ?? 0);
-                    $caption = sanitize_text_field($item['caption'] ?? '');
+                if (is_array($item) && !empty($item['type']) && $item['type'] === 'video') {
+                    $url = esc_url_raw($item['url'] ?? '');
+                    if (!$url) continue;
+                    $provider = sanitize_key($item['provider'] ?? '');
+                    if (!in_array($provider, $allowedProviders, true)) continue;
+                    $sanitized[] = [
+                        'type' => 'video',
+                        'url' => $url,
+                        'provider' => $provider,
+                        'caption' => sanitize_text_field($item['caption'] ?? ''),
+                        'thumb_id' => absint($item['thumb_id'] ?? 0),
+                    ];
                 } else {
-                    $id = absint($item);
-                    $caption = '';
-                }
-                if ($id > 0) {
-                    $sanitized[] = ['id' => $id, 'caption' => $caption];
+                    if (is_array($item)) {
+                        $id = absint($item['id'] ?? 0);
+                        $caption = sanitize_text_field($item['caption'] ?? '');
+                    } else {
+                        $id = absint($item);
+                        $caption = '';
+                    }
+                    if ($id > 0) {
+                        $sanitized[] = ['type' => 'image', 'id' => $id, 'caption' => $caption];
+                    }
                 }
             }
             return $sanitized;

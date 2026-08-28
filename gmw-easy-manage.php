@@ -3,7 +3,7 @@
  * Plugin Name: GMW Easy Manage
  * Plugin URI: https://gmwsys.com
  * Description: Structured content management for businesses. Stores hours, specials, menus, events, gallery, contact info, social links, artist profiles, and portfolios.
- * Version: 1.8.0
+ * Version: 1.9.0
  * Requires at least: 6.0
  * Requires PHP: 8.0
  * Author: GMW Systems
@@ -14,7 +14,7 @@
 
 defined('ABSPATH') or die;
 
-define('GMW_EM_VERSION', '1.8.0');
+define('GMW_EM_VERSION', '1.9.0');
 define('GMW_EM_PATH', plugin_dir_path(__FILE__));
 define('GMW_EM_URL', plugin_dir_url(__FILE__));
 define('GMW_EM_UPDATE_URL', 'https://apps.gmwsys.com/gmw-easy-manage-update/update.json');
@@ -63,6 +63,7 @@ if (defined('WP_CLI') && WP_CLI) {
 add_action('wp_enqueue_scripts', function () {
     wp_enqueue_style('gmw-easy-manage', GMW_EM_URL . 'assets/gmw-frontend.css', [], GMW_EM_VERSION);
     wp_enqueue_style('gmw-easy-manage-themes', GMW_EM_URL . 'assets/gmw-themes.css', ['gmw-easy-manage'], GMW_EM_VERSION);
+    wp_enqueue_script('gmw-easy-manage', GMW_EM_URL . 'assets/gmw-gallery.js', [], GMW_EM_VERSION, true);
 });
 
 add_action('admin_menu', function () {

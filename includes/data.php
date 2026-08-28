@@ -104,7 +104,7 @@ function gmw_sanitize_data($key, $data)
 
         case 'gallery':
             if (!is_array($data)) return [];
-            $allowedProviders = ['youtube', 'vimeo', 'instagram', 'tiktok'];
+            $allowedProviders = ['youtube', 'vimeo', 'instagram', 'tiktok', 'facebook'];
             $sanitized = [];
             foreach ($data as $item) {
                 if (is_array($item) && !empty($item['type']) && $item['type'] === 'video') {

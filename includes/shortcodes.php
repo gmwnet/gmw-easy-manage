@@ -46,6 +46,7 @@ function gmw_video_provider($url)
     if (strpos($host, 'vimeo.com') !== false) return 'vimeo';
     if (strpos($host, 'instagram.com') !== false || strpos($host, 'instagr.am') !== false) return 'instagram';
     if (strpos($host, 'tiktok.com') !== false) return 'tiktok';
+    if (strpos($host, 'facebook.com') !== false || strpos($host, 'fb.watch') !== false) return 'facebook';
     return '';
 }
 
@@ -101,6 +102,9 @@ function gmw_video_embed($url, $provider)
     }
     if ($provider === 'tiktok' && $id) {
         return '<blockquote class="tiktok-embed" cite="' . esc_attr($url) . '" data-video-id="' . esc_attr($id) . '" style="max-width:605px;min-width:325px;"><section></section></blockquote><script async src="https://www.tiktok.com/embed.js"></script>';
+    }
+    if ($provider === 'facebook') {
+        return '<iframe src="https://www.facebook.com/plugins/video.php?href=' . rawurlencode($url) . '&show_text=false&width=560" width="560" height="315" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>';
     }
     return '';
 }

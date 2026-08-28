@@ -95,9 +95,8 @@ function gmw_video_thumbnail_url($url, $provider)
     if ($provider === 'youtube' && $id) {
         return 'https://img.youtube.com/vi/' . $id . '/hqdefault.jpg';
     }
-    if ($provider === 'vimeo' && $id) {
-        return 'https://i.vimeocdn.com/video/' . $id . '_640x360.jpg';
-    }
+    // Vimeo has no deterministic public thumbnail URL — a stored thumb_id
+    // (resolved via oEmbed at save time in the admin) is used instead.
     return '';
 }
 

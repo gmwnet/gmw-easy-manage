@@ -32,7 +32,16 @@ ZIP_FILE="/tmp/gmw-easy-manage.zip"
 git archive --format=zip --prefix=gmw-easy-manage/ HEAD -o "$ZIP_FILE"
 SHA256=$(sha256sum "$ZIP_FILE" | awk '{print $1}')
 
+# Two signatures:
+#  - signature (legacy payload: version + download_url) — verified by pre-1.9.4 clients
+#  - signature_sha256 (digest-bound payload: + sha256) — verified by 1.9.4+ clients,
+#    cryptographically binding the ZIP digest so replacing the ZIP fails verification.
 SIGNATURE=$(php -r '
+$sk = sodium_hex2bin(trim(file_get_contents("'"$KEY_FILE"'")));
+$payload = json_encode(["version" => "'"$VERSION"'", "download_url" => "'"$DOWNLOAD_URL"'"], JSON_UNESCAPED_SLASHES);
+echo sodium_bin2hex(sodium_crypto_sign_detached($payload, $sk));
+')
+SIGNATURE_SHA256=$(php -r '
 $sk = sodium_hex2bin(trim(file_get_contents("'"$KEY_FILE"'")));
 $payload = json_encode(["version" => "'"$VERSION"'", "download_url" => "'"$DOWNLOAD_URL"'", "sha256" => "'"$SHA256"'"], JSON_UNESCAPED_SLASHES);
 echo sodium_bin2hex(sodium_crypto_sign_detached($payload, $sk));
@@ -46,10 +55,12 @@ cat > /tmp/update.json <<EOF
   "tested": "6.7",
   "requires": "6.0",
   "homepage": "https://github.com/gmwnet/gmw-easy-manage",
-  "signature": "$SIGNATURE"
+  "signature": "$SIGNATURE",
+  "signature_sha256": "$SIGNATURE_SHA256"
 }
 EOF
 
 echo "Signed update.json for v$VERSION (sha256 $SHA256)"
 echo "ZIP: $ZIP_FILE"
-echo "Signature: $SIGNATURE"
+echo "legacy signature:    $SIGNATURE"
+echo "digest-bound signature: $SIGNATURE_SHA256"

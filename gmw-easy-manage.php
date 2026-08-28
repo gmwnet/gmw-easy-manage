@@ -3,7 +3,7 @@
  * Plugin Name: GMW Easy Manage
  * Plugin URI: https://gmwsys.com
  * Description: Structured content management for businesses. Stores hours, specials, menus, events, gallery, contact info, social links, artist profiles, and portfolios.
- * Version: 1.9.4
+ * Version: 1.9.5
  * Requires at least: 6.0
  * Requires PHP: 8.0
  * Author: GMW Systems
@@ -14,7 +14,7 @@
 
 defined('ABSPATH') or die;
 
-define('GMW_EM_VERSION', '1.9.4');
+define('GMW_EM_VERSION', '1.9.5');
 define('GMW_EM_PATH', plugin_dir_path(__FILE__));
 define('GMW_EM_URL', plugin_dir_url(__FILE__));
 define('GMW_EM_UPDATE_URL', 'https://apps.gmwsys.com/gmw-easy-manage-update/update.json');
@@ -121,31 +121,36 @@ add_filter('pre_set_site_transient_update_plugins', function ($transient) {
     $data = json_decode(wp_remote_retrieve_body($remote));
     if (!$data || !isset($data->version) || !isset($data->signature)) return $transient;
 
-    // Accept BOTH signed payload formats:
-    //  - legacy: {"version","download_url"} (signed by pre-1.9.4 releases)
-    //  - current: {"version","download_url","sha256"}
-    // This allows sites on older versions to still verify the manifest while
-    // newer releases bind the ZIP digest into the signature.
-    $sig = @sodium_hex2bin($data->signature);
-    if ($sig === false || strlen($sig) !== SODIUM_CRYPTO_SIGN_BYTES) return $transient;
+    // Verify the manifest signature. Preference order:
+    //  1. signature_sha256 — digest-bound payload ({"version","download_url","sha256"}).
+    //     Binds the ZIP digest so a replaced ZIP fails verification. (1.9.4+ releases.)
+    //  2. signature — legacy payload ({"version","download_url"}). Accepted for
+    //     compatibility when a digest-bound signature is absent.
+    $sig = @sodium_hex2bin($data->signature_sha256 ?? '');
     $pub = sodium_hex2bin(GMW_EM_ED25519_PUBLIC_KEY);
-    $payloadCurrent = json_encode([
-        'version' => $data->version,
-        'download_url' => $data->download_url,
-        'sha256' => $data->sha256 ?? '',
-    ], JSON_UNESCAPED_SLASHES);
-    $payloadLegacy = json_encode([
-        'version' => $data->version,
-        'download_url' => $data->download_url,
-    ], JSON_UNESCAPED_SLASHES);
-    if (!sodium_crypto_sign_verify_detached($sig, $payloadCurrent, $pub)
-        && !sodium_crypto_sign_verify_detached($sig, $payloadLegacy, $pub)) {
-        return $transient;
+    $verified = false;
+    $sha = $data->sha256 ?? '';
+    if ($sig !== false && strlen($sig) === SODIUM_CRYPTO_SIGN_BYTES) {
+        $payloadCurrent = json_encode([
+            'version' => $data->version,
+            'download_url' => $data->download_url,
+            'sha256' => $sha,
+        ], JSON_UNESCAPED_SLASHES);
+        if (sodium_crypto_sign_verify_detached($sig, $payloadCurrent, $pub)) $verified = true;
+    }
+    if (!$verified) {
+        $sigLegacy = @sodium_hex2bin($data->signature);
+        if ($sigLegacy === false || strlen($sigLegacy) !== SODIUM_CRYPTO_SIGN_BYTES) return $transient;
+        $payloadLegacy = json_encode([
+            'version' => $data->version,
+            'download_url' => $data->download_url,
+        ], JSON_UNESCAPED_SLASHES);
+        if (!sodium_crypto_sign_verify_detached($sigLegacy, $payloadLegacy, $pub)) return $transient;
     }
 
     if (version_compare(GMW_EM_VERSION, $data->version, '<')) {
         // Remember the expected digest so the download is verified before install.
-        set_transient('gmw_em_expected_sha256', $data->sha256 ?? '', 10 * MINUTE_IN_SECONDS);
+        set_transient('gmw_em_expected_sha256', $sha, DAY_IN_SECONDS);
         $transient->response[plugin_basename(__FILE__)] = (object)[
             'slug'        => dirname(plugin_basename(__FILE__)),
             'new_version' => $data->version,
@@ -165,8 +170,9 @@ add_filter('upgrader_pre_download', function ($reply, $package, $upgrader, $hook
     if (strpos($package ?? '', '/gmw-easy-manage-update/gmw-easy-manage.zip') === false) {
         return $reply;
     }
+    // Don't delete the expected digest until verification succeeds, so a failed
+    // download / retried update still has a hash to check against.
     $expected = get_transient('gmw_em_expected_sha256');
-    delete_transient('gmw_em_expected_sha256');
     if (!$expected) {
         return new WP_Error('gmw_em_no_expected_hash', __('GMW Easy Manage update: missing expected digest.', 'gmw-easy-manage'));
     }
@@ -183,6 +189,9 @@ add_filter('upgrader_pre_download', function ($reply, $package, $upgrader, $hook
         @unlink($tmpFile);
         return new WP_Error('gmw_em_bad_zip', __('GMW Easy Manage update failed integrity check (ZIP digest mismatch).', 'gmw-easy-manage'));
     }
+
+    // Verified — clear the expected digest now that the package is being installed.
+    delete_transient('gmw_em_expected_sha256');
     return $tmpFile;
 }, 10, 4);
 

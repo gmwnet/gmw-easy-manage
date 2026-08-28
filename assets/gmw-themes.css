@@ -93,6 +93,10 @@
     background: rgba(22, 33, 62, 0.55);
 }
 
+.gmw-theme-dark .gmw-gallery-caption {
+    color: #e6e6e6;
+}
+
 .gmw-theme-dark .gmw-alert {
     background: #4a1118;
     border-color: #dc3545;

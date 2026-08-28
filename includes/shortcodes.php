@@ -222,12 +222,21 @@ add_shortcode('gmw_gallery', function ($atts) {
     ob_start();
     ?>
     <div class="gmw-grid gmw-gallery">
-        <?php foreach ($data as $attachment_id): ?>
-            <?php $img = wp_get_attachment_image_src($attachment_id, 'large'); ?>
+        <?php foreach ($data as $item): ?>
+            <?php
+                $attachment_id = is_array($item) ? absint($item['id'] ?? 0) : absint($item);
+                $caption = is_array($item) ? ($item['caption'] ?? '') : '';
+                $img = wp_get_attachment_image_src($attachment_id, 'large');
+            ?>
             <?php if ($img): ?>
-                <a href="<?php echo esc_url($img[0]); ?>" class="gmw-gallery-item" rel="lightbox">
-                    <?php echo wp_get_attachment_image($attachment_id, 'medium', false, ['class' => 'gmw-gallery-image', 'loading' => 'lazy']); ?>
-                </a>
+                <figure class="gmw-gallery-figure">
+                    <a href="<?php echo esc_url($img[0]); ?>" class="gmw-gallery-item" rel="lightbox">
+                        <?php echo wp_get_attachment_image($attachment_id, 'medium', false, ['class' => 'gmw-gallery-image', 'loading' => 'lazy']); ?>
+                    </a>
+                    <?php if ($caption): ?>
+                        <figcaption class="gmw-gallery-caption"><?php echo esc_html($caption); ?></figcaption>
+                    <?php endif; ?>
+                </figure>
             <?php endif; ?>
         <?php endforeach; ?>
     </div>
@@ -479,7 +488,7 @@ add_shortcode('gmw_stylebook', function () {
         'happy_hours' => '<table class="gmw-table gmw-happy-hours"><thead><tr><th>Day</th><th>Time</th><th>Details</th></tr></thead><tbody><tr><td class="gmw-day">Mon-Fri</td><td class="gmw-time">4:00 PM &ndash; 7:00 PM</td><td class="gmw-desc">$1 off all drafts</td></tr><tr><td class="gmw-day">Saturday</td><td class="gmw-time">3:00 PM &ndash; 5:00 PM</td><td class="gmw-desc">Half-price appetizers</td></tr></tbody></table>',
         'menu' => '<div class="gmw-menu-list"><a href="#" class="gmw-menu-link" target="_blank" rel="noopener">Dinner Menu</a></div>',
         'events' => '<div class="gmw-cards gmw-events"><div class="gmw-card gmw-event-card"><div class="gmw-event-card-body"><div class="gmw-event-date">2026-06-20</div><h3 class="gmw-card-title">Live Band</h3><div class="gmw-card-text">Local favorites take the stage</div></div></div><div class="gmw-card gmw-event-card"><div class="gmw-event-card-body"><div class="gmw-event-date">2026-07-04</div><h3 class="gmw-card-title">Independence Day Party</h3><div class="gmw-card-text">BBQ, drinks, and fireworks</div><div class="gmw-card-link"><a href="#">More info &raquo;</a></div></div></div></div>',
-        'gallery' => '<div class="gmw-grid gmw-gallery"><p class="gmw-placeholder">Gallery coming soon.</p></div>',
+        'gallery' => '<div class="gmw-grid gmw-gallery"><figure class="gmw-gallery-figure"><a href="#" class="gmw-gallery-item" rel="lightbox"><img src="https://picsum.photos/seed/gmw1/300/200" alt="" class="gmw-gallery-image" loading="lazy"></a><figcaption class="gmw-gallery-caption">Inside the taproom</figcaption></figure><figure class="gmw-gallery-figure"><a href="#" class="gmw-gallery-item" rel="lightbox"><img src="https://picsum.photos/seed/gmw2/300/200" alt="" class="gmw-gallery-image" loading="lazy"></a><figcaption class="gmw-gallery-caption">Patio seating</figcaption></figure></div>',
         'contact' => '<div class="gmw-card gmw-contact"><div class="gmw-contact-phone"><span>(555) 123-4567</span> <a href="tel:+15551234567" class="gmw-contact-map" target="_blank" rel="noopener noreferrer">Call</a></div><div class="gmw-contact-email"><span>info@example.com</span> <a href="mailto:info@example.com" class="gmw-contact-map" target="_blank" rel="noopener noreferrer">Email</a></div><div class="gmw-contact-address"><span>123 Main St, Anytown USA</span> <a href="https://www.google.com/maps?q=123+Main+St%2C+Anytown+USA" class="gmw-contact-map" target="_blank" rel="noopener noreferrer">Map</a></div></div>',
         'social' => '<div class="gmw-row gmw-social"><a href="https://facebook.com/" class="gmw-social-link" target="_blank" rel="noopener noreferrer"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg> Facebook</a><a href="https://instagram.com/" class="gmw-social-link" target="_blank" rel="noopener noreferrer"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg> Instagram</a></div>',
         'alert' => '<div class="gmw-banner gmw-alert" role="alert"><span class="gmw-banner-icon" aria-hidden="true">&#9888;</span><span class="gmw-banner-text">Weather closure: Opening at noon today due to snow.</span></div>',

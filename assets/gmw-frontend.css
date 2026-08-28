@@ -149,6 +149,12 @@
     margin: 1rem 0;
 }
 
+.gmw-gallery-figure {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
 .gmw-gallery-item {
     display: block;
     overflow: hidden;
@@ -164,6 +170,12 @@
 
 .gmw-gallery-item:hover .gmw-gallery-image {
     transform: scale(1.05);
+}
+
+.gmw-gallery-caption {
+    padding: 0.5rem 0.25rem 0;
+    font-size: 0.85rem;
+    text-align: center;
 }
 
 .gmw-contact {

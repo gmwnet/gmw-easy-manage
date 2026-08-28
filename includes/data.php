@@ -104,7 +104,21 @@ function gmw_sanitize_data($key, $data)
 
         case 'gallery':
             if (!is_array($data)) return [];
-            return array_map('absint', $data);
+            // Accept legacy flat array of attachment IDs and migrate to objects.
+            $sanitized = [];
+            foreach ($data as $item) {
+                if (is_array($item)) {
+                    $id = absint($item['id'] ?? 0);
+                    $caption = sanitize_text_field($item['caption'] ?? '');
+                } else {
+                    $id = absint($item);
+                    $caption = '';
+                }
+                if ($id > 0) {
+                    $sanitized[] = ['id' => $id, 'caption' => $caption];
+                }
+            }
+            return $sanitized;
 
         case 'contact':
             return [

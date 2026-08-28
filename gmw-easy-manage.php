@@ -120,14 +120,29 @@ add_filter('pre_set_site_transient_update_plugins', function ($transient) {
     if (is_wp_error($remote) || wp_remote_retrieve_response_code($remote) !== 200) return $transient;
     $data = json_decode(wp_remote_retrieve_body($remote));
     if (!$data || !isset($data->version) || !isset($data->signature)) return $transient;
-    $payload = json_encode([
+
+    // Accept BOTH signed payload formats:
+    //  - legacy: {"version","download_url"} (signed by pre-1.9.4 releases)
+    //  - current: {"version","download_url","sha256"}
+    // This allows sites on older versions to still verify the manifest while
+    // newer releases bind the ZIP digest into the signature.
+    $sig = @sodium_hex2bin($data->signature);
+    if ($sig === false || strlen($sig) !== SODIUM_CRYPTO_SIGN_BYTES) return $transient;
+    $pub = sodium_hex2bin(GMW_EM_ED25519_PUBLIC_KEY);
+    $payloadCurrent = json_encode([
         'version' => $data->version,
         'download_url' => $data->download_url,
         'sha256' => $data->sha256 ?? '',
     ], JSON_UNESCAPED_SLASHES);
-    $sig = @sodium_hex2bin($data->signature);
-    if ($sig === false || strlen($sig) !== SODIUM_CRYPTO_SIGN_BYTES) return $transient;
-    if (!sodium_crypto_sign_verify_detached($sig, $payload, sodium_hex2bin(GMW_EM_ED25519_PUBLIC_KEY))) return $transient;
+    $payloadLegacy = json_encode([
+        'version' => $data->version,
+        'download_url' => $data->download_url,
+    ], JSON_UNESCAPED_SLASHES);
+    if (!sodium_crypto_sign_verify_detached($sig, $payloadCurrent, $pub)
+        && !sodium_crypto_sign_verify_detached($sig, $payloadLegacy, $pub)) {
+        return $transient;
+    }
+
     if (version_compare(GMW_EM_VERSION, $data->version, '<')) {
         // Remember the expected digest so the download is verified before install.
         set_transient('gmw_em_expected_sha256', $data->sha256 ?? '', 10 * MINUTE_IN_SECONDS);

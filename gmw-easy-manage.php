@@ -3,7 +3,7 @@
  * Plugin Name: GMW Easy Manage
  * Plugin URI: https://gmwsys.com
  * Description: Structured content management for businesses. Stores hours, specials, menus, events, gallery, contact info, social links, artist profiles, and portfolios.
- * Version: 1.9.3
+ * Version: 1.9.4
  * Requires at least: 6.0
  * Requires PHP: 8.0
  * Author: GMW Systems
@@ -14,7 +14,7 @@
 
 defined('ABSPATH') or die;
 
-define('GMW_EM_VERSION', '1.9.3');
+define('GMW_EM_VERSION', '1.9.4');
 define('GMW_EM_PATH', plugin_dir_path(__FILE__));
 define('GMW_EM_URL', plugin_dir_url(__FILE__));
 define('GMW_EM_UPDATE_URL', 'https://apps.gmwsys.com/gmw-easy-manage-update/update.json');
@@ -123,11 +123,14 @@ add_filter('pre_set_site_transient_update_plugins', function ($transient) {
     $payload = json_encode([
         'version' => $data->version,
         'download_url' => $data->download_url,
+        'sha256' => $data->sha256 ?? '',
     ], JSON_UNESCAPED_SLASHES);
     $sig = @sodium_hex2bin($data->signature);
     if ($sig === false || strlen($sig) !== SODIUM_CRYPTO_SIGN_BYTES) return $transient;
     if (!sodium_crypto_sign_verify_detached($sig, $payload, sodium_hex2bin(GMW_EM_ED25519_PUBLIC_KEY))) return $transient;
     if (version_compare(GMW_EM_VERSION, $data->version, '<')) {
+        // Remember the expected digest so the download is verified before install.
+        set_transient('gmw_em_expected_sha256', $data->sha256 ?? '', 10 * MINUTE_IN_SECONDS);
         $transient->response[plugin_basename(__FILE__)] = (object)[
             'slug'        => dirname(plugin_basename(__FILE__)),
             'new_version' => $data->version,
@@ -140,6 +143,34 @@ add_filter('pre_set_site_transient_update_plugins', function ($transient) {
     return $transient;
 });
 
+// Verify the downloaded ZIP matches the signed digest before WordPress installs it.
+// upgrader_pre_download short-circuits the package download: we fetch the ZIP,
+// check its SHA-256 against the signed manifest value, and hand WP the verified file.
+add_filter('upgrader_pre_download', function ($reply, $package, $upgrader, $hook_extra) {
+    if (strpos($package ?? '', '/gmw-easy-manage-update/gmw-easy-manage.zip') === false) {
+        return $reply;
+    }
+    $expected = get_transient('gmw_em_expected_sha256');
+    delete_transient('gmw_em_expected_sha256');
+    if (!$expected) {
+        return new WP_Error('gmw_em_no_expected_hash', __('GMW Easy Manage update: missing expected digest.', 'gmw-easy-manage'));
+    }
+
+    $tmpFile = wp_tempnam('gmw-em-update');
+    $download = wp_remote_get($package, ['timeout' => 60, 'stream' => true, 'filename' => $tmpFile]);
+    if (is_wp_error($download) || wp_remote_retrieve_response_code($download) !== 200) {
+        @unlink($tmpFile);
+        return is_wp_error($download) ? $download : new WP_Error('gmw_em_download_failed', __('GMW Easy Manage update: failed to download package.', 'gmw-easy-manage'));
+    }
+
+    $actual = hash_file('sha256', $tmpFile);
+    if (!hash_equals($expected, $actual)) {
+        @unlink($tmpFile);
+        return new WP_Error('gmw_em_bad_zip', __('GMW Easy Manage update failed integrity check (ZIP digest mismatch).', 'gmw-easy-manage'));
+    }
+    return $tmpFile;
+}, 10, 4);
+
 add_action('admin_post_gmw_em_check_updates', function () {
     if (!wp_verify_nonce($_GET['_wpnonce'] ?? '', 'gmw_em_check_updates') || !current_user_can('manage_options')) {
         wp_die('Unauthorized');
@@ -151,7 +182,6 @@ add_action('admin_post_gmw_em_check_updates', function () {
 
 add_action('init', function () {
     if (get_option('gmw_purge') === '1') {
-        delete_option('gmw_purge');
         $siteHost = wp_parse_url(home_url('/'), PHP_URL_HOST) ?: 'localhost';
         $varnishHost = defined('GMW_VARNISH_HOST') ? GMW_VARNISH_HOST : '127.0.0.1';
         $varnishPort = defined('GMW_VARNISH_PORT') ? GMW_VARNISH_PORT : 6081;
@@ -166,8 +196,15 @@ add_action('init', function () {
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_TIMEOUT => 3,
         ]);
-        curl_exec($ch);
+        $res = curl_exec($ch);
+        $httpCode = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
+        // Only clear the flag on a successful PURGE (2xx from Varnish). If the
+        // purge failed (e.g. Varnish down), keep the flag so the next request
+        // retries rather than silently serving stale cache.
+        if ($res !== false && $httpCode >= 200 && $httpCode < 300) {
+            delete_option('gmw_purge');
+        }
     }
 });
 

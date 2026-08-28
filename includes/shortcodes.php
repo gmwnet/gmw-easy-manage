@@ -42,12 +42,25 @@ function gmw_theme_wrap($html, $theme)
 function gmw_video_provider($url)
 {
     $host = strtolower(parse_url($url, PHP_URL_HOST) ?? '');
-    if (strpos($host, 'youtube.com') !== false || strpos($host, 'youtu.be') !== false) return 'youtube';
-    if (strpos($host, 'vimeo.com') !== false) return 'vimeo';
-    if (strpos($host, 'instagram.com') !== false || strpos($host, 'instagr.am') !== false) return 'instagram';
-    if (strpos($host, 'tiktok.com') !== false) return 'tiktok';
-    if (strpos($host, 'facebook.com') !== false || strpos($host, 'fb.watch') !== false) return 'facebook';
-    return '';
+    // Exact host or known subdomain match only — not substring, to avoid lookalikes.
+    $hostMap = [
+        'youtube.com' => 'youtube',
+        'www.youtube.com' => 'youtube',
+        'm.youtube.com' => 'youtube',
+        'youtu.be' => 'youtube',
+        'vimeo.com' => 'vimeo',
+        'player.vimeo.com' => 'vimeo',
+        'www.vimeo.com' => 'vimeo',
+        'instagram.com' => 'instagram',
+        'www.instagram.com' => 'instagram',
+        'instagr.am' => 'instagram',
+        'tiktok.com' => 'tiktok',
+        'www.tiktok.com' => 'tiktok',
+        'facebook.com' => 'facebook',
+        'www.facebook.com' => 'facebook',
+        'fb.watch' => 'facebook',
+    ];
+    return $hostMap[$host] ?? '';
 }
 
 function gmw_video_id($url, $provider)
@@ -101,7 +114,7 @@ function gmw_video_embed($url, $provider)
         return '<iframe src="https://www.instagram.com/p/' . esc_attr($id) . '/embed/" frameborder="0" scrolling="no" allowtransparency="true" allowfullscreen></iframe>';
     }
     if ($provider === 'tiktok' && $id) {
-        return '<blockquote class="tiktok-embed" cite="' . esc_attr($url) . '" data-video-id="' . esc_attr($id) . '" style="max-width:605px;min-width:325px;"><section></section></blockquote><script async src="https://www.tiktok.com/embed.js"></script>';
+        return '<iframe src="https://www.tiktok.com/player/v1/' . esc_attr($id) . '" width="100%" height="100%" frameborder="0" allowfullscreen allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" scrolling="no"></iframe>';
     }
     if ($provider === 'facebook') {
         return '<iframe src="https://www.facebook.com/plugins/video.php?href=' . rawurlencode($url) . '&show_text=false&width=560" width="560" height="315" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>';

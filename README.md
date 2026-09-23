@@ -68,6 +68,44 @@ This feature requires outbound HTTPS from your server to `apps.gmwsys.com`.
 If the portal is unreachable, the plugin continues to work; registration will
 retry on subsequent admin page loads.
 
+## EasyForms Module
+
+Embed **GMW EasyForms** contact forms inline on any page — no WP form plugin,
+no per-form licensing. The form renders from a static fragment (fetched from the
+EasyForms host once, cached locally to `wp-content/uploads/gmw-forms/`), so page
+renders never call the host — Varnish-safe. All validation, anti-spam (Altcha
+proof-of-work), rate limiting, and storage happen host-side.
+
+```php
+// wp-config.php — point at the EasyForms host
+define('GMW_EF_HOST', 'https://easyforms.gmwsys.com');
+```
+
+Shortcode:
+
+```
+[gmw_easyform org="whisperslounge" form="contact-form"]
+[gmw_easyform org="whisperslounge" form="contact-form" refresh="1"]   # re-fetch the fragment
+```
+
+- The host returns a `{ok: true, id: N}` JSON response; the page swaps in a
+  thank-you inline (no navigation).
+- **PII is encrypted at rest on the host** — never in the WP database (see the
+  EasyForms PII baseline: hard-PII fields must be marked `pii: true` in the form
+  JSON, enforced by the host's form linter).
+- Form definitions, themes, and notification emails are configured on the host
+  per org — no settings surface in the plugin.
+- Uses the same update/security model as the rest of the plugin (Ed25519-signed).
+
+### EasyForms module version history
+
+- **1.9.6** — module added (`includes/easyforms.php`, `assets/gmw-easyform.{js,css}`)
+- **1.9.7–1.9.8** — verify-step flow + button mode (superseded), per-form themes
+- **1.9.9–1.9.10** — embed-only refactor; static fragment cached to
+  `uploads/gmw-forms/` (zero host calls at render)
+- **1.9.11–1.9.13** — CSS hardening: theme-interference fixes, hard-scoped rules,
+  `.gmw-easyform` centered full-width; inline thank-you + preflight fix
+
 ## Update Security
 
 Plugin update integrity is verified using Ed25519 digital signatures (via PHP's

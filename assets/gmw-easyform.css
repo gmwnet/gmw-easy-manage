@@ -2,17 +2,43 @@
 
 .gmw-easyform {
     max-width: 640px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: left;
+    width: 100% !important;
+    display: block !important;
+    float: none !important;
+    flex: none !important;
+    align-self: auto !important;
+}
+
+/* Hard-scope against theme interference (Colibri et al): theme globals must
+   not leak into the form — labels left-aligned, inputs full-width, no flex
+   overrides on the form itself. */
+.gmw-easyform form,
+.gmw-easyform form * {
+    box-sizing: border-box;
+}
+
+.gmw-easyform form {
+    display: block !important;
+    text-align: left !important;
+    flex-direction: row !important;
+    align-items: initial !important;
+    justify-content: initial !important;
 }
 
 .gmw-easyform .mb-3 {
     margin-bottom: 1rem;
+    display: block !important;
 }
 
 .gmw-easyform label.form-label {
-    display: block;
-    margin-bottom: 0.35rem;
+    display: block !important;
+    margin-bottom: 0.35rem !important;
     font-weight: 600;
     font-size: 0.95rem;
+    text-align: left !important;
 }
 
 .gmw-easyform .text-danger {
@@ -21,23 +47,27 @@
 
 .gmw-easyform .form-control,
 .gmw-easyform .form-select {
-    display: block;
-    width: 100%;
-    padding: 0.5rem 0.75rem;
-    font-size: 1rem;
-    line-height: 1.5;
-    color: #212529;
-    background: #fff;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    box-sizing: border-box;
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0.5rem 0.75rem !important;
+    font-size: 1rem !important;
+    line-height: 1.5 !important;
+    color: #212529 !important;
+    background: #fff !important;
+    border: 1px solid #ced4da !important;
+    border-radius: 4px !important;
+    box-sizing: border-box !important;
+    text-align: left !important;
+    margin: 0 0 0 0 !important;
+    box-shadow: none !important;
 }
 
 .gmw-easyform .form-control:focus,
 .gmw-easyform .form-select:focus {
-    border-color: #86b7fe;
-    outline: 0;
-    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    border-color: #86b7fe !important;
+    outline: 0 !important;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25) !important;
 }
 
 .gmw-easyform .form-text {

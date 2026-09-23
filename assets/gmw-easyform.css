@@ -1,0 +1,119 @@
+/* GMW EasyForms embed — theme-neutral form styling (no Bootstrap dependency) */
+
+.gmw-easyform {
+    max-width: 640px;
+}
+
+.gmw-easyform .mb-3 {
+    margin-bottom: 1rem;
+}
+
+.gmw-easyform label.form-label {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.gmw-easyform .text-danger {
+    color: #dc3545;
+}
+
+.gmw-easyform .form-control,
+.gmw-easyform .form-select {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #212529;
+    background: #fff;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.gmw-easyform .form-control:focus,
+.gmw-easyform .form-select:focus {
+    border-color: #86b7fe;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.gmw-easyform .form-text {
+    margin-top: 0.25rem;
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.gmw-easyform .form-check {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.gmw-easyform .form-check-label {
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.gmw-easyform .form-check-input {
+    width: 1.1em;
+    height: 1.1em;
+}
+
+.gmw-easyform .btn-primary {
+    display: inline-block;
+    padding: 0.6rem 1.4rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    background: #0d6efd;
+    border: 1px solid #0d6efd;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.gmw-easyform .btn-primary:hover {
+    background: #0b5ed7;
+}
+
+.gmw-easyform .btn-primary:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+.gmw-easyform .gmw-easyform-spinner {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    vertical-align: -0.125em;
+    border: 0.2em solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: gmw-easyform-spin 0.75s linear infinite;
+}
+
+@keyframes gmw-easyform-spin {
+    to { transform: rotate(360deg); }
+}
+
+.gmw-easyform .gmw-easyform-error {
+    margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+    background: #f8d7da;
+    border: 1px solid #f5c2c7;
+    border-radius: 4px;
+    color: #842029;
+    font-size: 0.95rem;
+}
+
+.gmw-easyform .gmw-easyform-thankyou {
+    padding: 1rem 1.25rem;
+    background: #d1e7dd;
+    border: 1px solid #badbcc;
+    border-radius: 4px;
+    color: #0f5132;
+    font-size: 1rem;
+}

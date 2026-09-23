@@ -2,8 +2,8 @@
 /**
  * Plugin Name: GMW Easy Manage
  * Plugin URI: https://gmwsys.com
- * Description: Structured content management for businesses. Stores hours, specials, menus, events, gallery, contact info, social links, artist profiles, and portfolios.
- * Version: 1.9.5
+ * Description: Structured content management for businesses. Stores hours, specials, menus, events, gallery, contact info, social links, artist profiles, portfolios, and embedded EasyForms.
+ * Version: 1.9.11
  * Requires at least: 6.0
  * Requires PHP: 8.0
  * Author: GMW Systems
@@ -14,7 +14,7 @@
 
 defined('ABSPATH') or die;
 
-define('GMW_EM_VERSION', '1.9.5');
+define('GMW_EM_VERSION', '1.9.11');
 define('GMW_EM_PATH', plugin_dir_path(__FILE__));
 define('GMW_EM_URL', plugin_dir_url(__FILE__));
 define('GMW_EM_UPDATE_URL', 'https://apps.gmwsys.com/gmw-easy-manage-update/update.json');
@@ -22,6 +22,7 @@ define('GMW_EM_ED25519_PUBLIC_KEY', '1908b0fec1cbf2f692a24594df6f083e8e1726673c0
 
 require_once GMW_EM_PATH . 'includes/data.php';
 require_once GMW_EM_PATH . 'includes/shortcodes.php';
+require_once GMW_EM_PATH . 'includes/easyforms.php';
 
 // Allow our update server host (resolves to 127.0.0.1 on many servers, which
 // WordPress's SSRF protection rejects via http_request_host_is_external).
@@ -87,6 +88,7 @@ add_action('admin_menu', function () {
         <tr><td><code>[gmw_portfolio]</code></td><td>Artist portfolio gallery</td><td>gallery</td><td>Requires <code>slug</code> attribute, e.g. <code>[gmw_portfolio slug="kayla"]</code>.</td></tr>
         <tr><td><code>[gmw_alert]</code></td><td>Alert banner</td><td>banner</td><td>Hidden when text is empty. Red with &#9888; icon.</td></tr>
         <tr><td><code>[gmw_promotion]</code></td><td>Promotion banner</td><td>banner</td><td>Hidden when text is empty. Yellow with ! icon.</td></tr>
+        <tr><td><code>[gmw_easyform org="..." form="..."]</code></td><td>Embedded EasyForms form</td><td>inline</td><td>Renders an EasyForms form inline; all validation happens on the GMW EasyForms host. Optional <code>thank_you</code> attribute overrides the success message.</td></tr>
         </tbody>
         </table>
 

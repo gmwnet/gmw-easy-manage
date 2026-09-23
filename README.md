@@ -105,6 +105,9 @@ Shortcode:
   `uploads/gmw-forms/` (zero host calls at render)
 - **1.9.11–1.9.13** — CSS hardening: theme-interference fixes, hard-scoped rules,
   `.gmw-easyform` centered full-width; inline thank-you + preflight fix
+- **1.9.14** — release; signed update published (dual manifest signatures)
+- **1.9.15** — plugin details modal now serves our changelog (self-hosted
+  `plugins_api`), no more "Plugin not found"
 
 ## Update Security
 

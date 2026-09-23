@@ -3,7 +3,7 @@
  * Plugin Name: GMW Easy Manage
  * Plugin URI: https://gmwsys.com
  * Description: Structured content management for businesses. Stores hours, specials, menus, events, gallery, contact info, social links, artist profiles, portfolios, and embedded EasyForms.
- * Version: 1.9.14
+ * Version: 1.9.15
  * Requires at least: 6.0
  * Requires PHP: 8.0
  * Author: GMW Systems
@@ -14,7 +14,7 @@
 
 defined('ABSPATH') or die;
 
-define('GMW_EM_VERSION', '1.9.14');
+define('GMW_EM_VERSION', '1.9.15');
 define('GMW_EM_PATH', plugin_dir_path(__FILE__));
 define('GMW_EM_URL', plugin_dir_url(__FILE__));
 define('GMW_EM_UPDATE_URL', 'https://apps.gmwsys.com/gmw-easy-manage-update/update.json');
@@ -164,6 +164,49 @@ add_filter('pre_set_site_transient_update_plugins', function ($transient) {
     }
     return $transient;
 });
+
+// Self-hosted plugin details for the "View version X details" modal.
+// WP queries the wordpress.org API by default; intercept plugin_information for
+// our own slug so the modal shows our changelog instead of "Plugin not found".
+add_filter('plugins_api', function ($result, $action, $args) {
+    if ($action !== 'plugin_information') return $result;
+    if (($args->slug ?? '') !== 'gmw-easy-manage') return $result;
+
+    $remote = wp_remote_get(GMW_EM_UPDATE_URL, ['timeout' => 5]);
+    $data = null;
+    if (!is_wp_error($remote) && wp_remote_retrieve_response_code($remote) === 200) {
+        $data = json_decode(wp_remote_retrieve_body($remote));
+    }
+
+    $version = $data->version ?? GMW_EM_VERSION;
+    $requires = $data->requires ?? '6.0';
+    $tested = $data->tested ?? '6.7';
+    $homepage = $data->homepage ?? 'https://github.com/gmwnet/gmw-easy-manage';
+    $download = $data->download_url ?? '';
+
+    $changelog = '<h4>1.9.15</h4><ul><li>Plugin details modal now shows our changelog (no more "Plugin not found" for self-hosted updates).</li></ul>'
+        . '<h4>1.9.14</h4><ul><li>EasyForms embed module — static fragment, host-side validation, Altcha anti-spam.</li><li>CSS hardening — theme-interference fixes, form centering.</li></ul>'
+        . '<h4>1.9.13</h4><ul><li>Theme-interference hardening, form centering.</li></ul>'
+        . '<h4>1.9.10</h4><ul><li>Static embed fragment cached locally — zero host calls at render.</li></ul>'
+        . '<h4>1.9.6</h4><ul><li>EasyForms module added.</li></ul>';
+
+    $info = (object)[
+        'name'          => 'GMW Easy Manage',
+        'slug'          => 'gmw-easy-manage',
+        'version'       => $version,
+        'author'        => '<a href="https://gmwsys.com">GMW Systems</a>',
+        'requires'      => $requires,
+        'requires_php'  => '8.0',
+        'tested'        => $tested,
+        'homepage'      => $homepage,
+        'download_link' => $download,
+        'sections'      => [
+            'description' => '<p>Structured content management for bars, restaurants, and hospitality venues — hours, specials, menus, events, gallery, contact info, artist profiles, and embedded GMW EasyForms.</p>',
+            'changelog'   => $changelog,
+        ],
+    ];
+    return $info;
+}, 10, 3);
 
 // Verify the downloaded ZIP matches the signed digest before WordPress installs it.
 // upgrader_pre_download short-circuits the package download: we fetch the ZIP,

@@ -108,6 +108,11 @@ Shortcode:
 - **1.9.14** — release; signed update published (dual manifest signatures)
 - **1.9.15** — plugin details modal now serves our changelog (self-hosted
   `plugins_api`), no more "Plugin not found"
+- **1.9.16** — audit hardening pass: fragment trust header required
+  (`X-EasyForms-Fragment: 1` from the host, HTTPS-enforced), prod-host guardrail
+  (missing `GMW_EF_HOST` defaults by site domain — never gmwtest on prod),
+  idempotent cache-dir deny files (`.htaccess`/`index.php` always enforced),
+  `plugins_api` arg checks, `wp_safe_redirect`
 
 ## Update Security
 

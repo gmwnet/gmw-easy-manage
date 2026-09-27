@@ -3,7 +3,7 @@
  * Plugin Name: GMW Easy Manage
  * Plugin URI: https://gmwsys.com
  * Description: Structured content management for businesses. Stores hours, specials, menus, events, gallery, contact info, social links, artist profiles, portfolios, and embedded EasyForms.
- * Version: 1.9.15
+ * Version: 1.9.16
  * Requires at least: 6.0
  * Requires PHP: 8.0
  * Author: GMW Systems
@@ -14,7 +14,7 @@
 
 defined('ABSPATH') or die;
 
-define('GMW_EM_VERSION', '1.9.15');
+define('GMW_EM_VERSION', '1.9.16');
 define('GMW_EM_PATH', plugin_dir_path(__FILE__));
 define('GMW_EM_URL', plugin_dir_url(__FILE__));
 define('GMW_EM_UPDATE_URL', 'https://apps.gmwsys.com/gmw-easy-manage-update/update.json');
@@ -35,7 +35,8 @@ add_filter('http_request_host_is_external', function ($external, $host, $url) {
 
 // Return plugin info for "View Details" modal (since we're not in WP Plugin Directory).
 add_filter('plugins_api', function ($result, $action, $args) {
-    if ($action !== 'plugin_information' || $args->slug !== dirname(plugin_basename(__FILE__))) {
+    if ($action !== 'plugin_information' || !is_object($args) || !isset($args->slug)
+        || $args->slug !== dirname(plugin_basename(__FILE__))) {
         return $result;
     }
     return (object) [
@@ -245,7 +246,7 @@ add_action('admin_post_gmw_em_check_updates', function () {
         wp_die('Unauthorized');
     }
     delete_site_transient('update_plugins');
-    wp_redirect(admin_url('plugins.php?update-check=1'));
+    wp_safe_redirect(admin_url('plugins.php?update-check=1'));
     exit;
 });
 
